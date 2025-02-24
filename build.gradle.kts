@@ -36,6 +36,22 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.security:spring-security-test")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    developmentOnly("org.springframework.boot:spring-boot-devtools")
+    // https://mvnrepository.com/artifact/com.auth0/java-jwt
+    implementation("com.auth0:java-jwt:4.5.0")
+    // https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-starter-webmvc-ui
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.5")
+    // https://mvnrepository.com/artifact/jakarta.inject/jakarta.inject-api
+    implementation("jakarta.inject:jakarta.inject-api:2.0.1")
+    // https://mvnrepository.com/artifact/javax.mail/mail
+    implementation("javax.mail:mail:1.4.7")
+    // https://mvnrepository.com/artifact/javax.mail/javax.mail-api
+    implementation("javax.mail:javax.mail-api:1.6.2")
+    // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-thymeleaf
+    implementation("org.springframework.boot:spring-boot-starter-thymeleaf:3.4.3")
+    // https://mvnrepository.com/artifact/com.google.cloud/google-cloud-storage
+    implementation("com.google.cloud:google-cloud-storage:2.48.2")
+
 }
 
 tasks.withType<Test> {
