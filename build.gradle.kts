@@ -52,6 +52,7 @@ dependencies {
     // https://mvnrepository.com/artifact/com.google.cloud/google-cloud-storage
     implementation("com.google.cloud:google-cloud-storage:2.48.2")
 
+
 }
 
 tasks.withType<Test> {

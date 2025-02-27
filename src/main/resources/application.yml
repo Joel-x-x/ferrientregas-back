@@ -5,6 +5,10 @@ spring:
     url: jdbc:mysql://localhost:3306/ferrientregas
     username: root
     password:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      pool-name: HikariDataSource
+      maximum-pool-size: 10
   jpa:
     show-sql: true
     properties:
