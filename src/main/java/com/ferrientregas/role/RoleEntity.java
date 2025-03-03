@@ -1,4 +1,4 @@
-package com.ferrientregas.domain.entity;
+package com.ferrientregas.role;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -17,20 +17,15 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "users")
-public class UserEntity {
+@Table(name="roles")
+public class RoleEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(unique = true, updatable = false, nullable = false,
             columnDefinition = "CHAR(36)")
     @JdbcTypeCode(SqlTypes.CHAR)
     private UUID id;
-    private String firstNames;
-    private String lastNames;
-    @Column(unique = true)
-    private String email;
-    private String password;
-    private String profileImage;
+    private String name;
     @NotNull
     @CreatedDate
     @Column(name = "created_at", updatable = false)
@@ -38,18 +33,4 @@ public class UserEntity {
     @CreatedDate
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
-    private Boolean emailConfirmed;
-    private Boolean status;
-
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "user_roles",
-            joinColumns = @JoinColumn(
-                    name = "user_id", referencedColumnName = "id"
-            ),
-            inverseJoinColumns = @JoinColumn(
-                    name = "role_id", referencedColumnName = "id"
-            )
-    )
-    private RoleEntity role;
 }

@@ -1,6 +1,5 @@
-package com.ferrientregas.repository;
+package com.ferrientregas.identificationtype;
 
-import com.ferrientregas.domain.entity.IdentificationTypeEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

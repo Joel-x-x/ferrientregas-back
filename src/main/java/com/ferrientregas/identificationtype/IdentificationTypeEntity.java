@@ -1,4 +1,4 @@
-package com.ferrientregas.domain.entity;
+package com.ferrientregas.identificationtype;
 
 import jakarta.persistence.*;
 import lombok.*;

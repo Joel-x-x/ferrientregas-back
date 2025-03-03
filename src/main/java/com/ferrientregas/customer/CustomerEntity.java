@@ -1,9 +1,11 @@
-package com.ferrientregas.domain.entity;
+package com.ferrientregas.customer;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.ferrientregas.identificationtype.IdentificationTypeEntity;
+import com.ferrientregas.user.UserEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;

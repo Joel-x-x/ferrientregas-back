@@ -1,6 +1,5 @@
-package com.ferrientregas.repository;
+package com.ferrientregas.role;
 
-import com.ferrientregas.domain.entity.RoleEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
