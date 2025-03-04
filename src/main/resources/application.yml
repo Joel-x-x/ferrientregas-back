@@ -25,7 +25,7 @@ server:
 # JWT
 api:
   security:
-    secret: ZmVycmllbnRyZWdhczIwMjU=
+    secret: aedb5581186c3017a42eb982bf1f6422005f2de1a3729d700f6ae44eb99deba3
     expiration: 560000
 
 cors:
