@@ -78,7 +78,6 @@ public class JwtService {
         * TODO: Fix the SECRET KEY to use it on the application.yml
         *  also need it to be 256 bit key
         * */
-        String SECRET_KEY = "aedb5581186c3017a42eb982bf1f6422005f2de1a3729d700f6ae44eb99deba3";
         byte[] decodedKey = Decoders.BASE64.decode(SECRET_KEY);
         return Keys.hmacShaKeyFor(decodedKey);
     }
