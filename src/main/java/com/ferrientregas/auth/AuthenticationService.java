@@ -8,7 +8,6 @@ import com.ferrientregas.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -24,8 +23,9 @@ public class AuthenticationService {
 
     public AuthenticationResponse register(RegisterRequest request) {
         RoleEntity userRole = roleRepository.findByName("ROLE_USER")
-                .orElseThrow(() -> new RuntimeException("Role not found"));
-
+                .orElseGet(() ->
+                        roleRepository.save(RoleEntity.builder()
+                        .name("ROLE_USER").build()));
         var user = UserEntity.builder()
                 .firstNames(request.getFirstNames())
                 .lastNames(request.getLastNames())

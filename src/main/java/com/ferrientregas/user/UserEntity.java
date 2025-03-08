@@ -38,6 +38,7 @@ public class UserEntity implements UserDetails {
     private String password;
     private String profileImage;
     @CreatedDate
+    @NotNull
     @Column(name = "created_at")
     private LocalDateTime createdAt;
     @CreatedDate
@@ -58,6 +59,11 @@ public class UserEntity implements UserDetails {
     )
     @OnDelete(action = OnDeleteAction.CASCADE)
     private RoleEntity role;
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
