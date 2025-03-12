@@ -1,5 +1,8 @@
 spring:
+  profiles:
+    active: dev
   application:
+
     name: ferrientregas
   datasource:
     url: jdbc:mysql://localhost:3306/ferrientregas
@@ -19,8 +22,8 @@ spring:
   mail:
     host: smtp.gmail.com
     port: 587
-    username: systemgym0001@gmail.com
-    password: vswetusjdoxtufvs
+    username: ${EMAIL_USERNAME}
+    password: ${EMAIL_PASSWORD}
     default-encoding: UTF-8
     properties:
       mail:
@@ -43,7 +46,7 @@ server:
 # JWT
 api:
   security:
-    secret: 9ddb40a3718e268a985f6ebedb4035183bde2af57fe1084b3c2208ff57bd4af3
+    secret: ${JWT_SECRET}
     expiration: 560000
 
 #CORS

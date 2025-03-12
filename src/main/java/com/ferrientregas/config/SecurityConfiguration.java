@@ -30,7 +30,8 @@ public class SecurityConfiguration {
                 .sessionManagement(sess ->
                         sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests((authorize) ->
-                        authorize.requestMatchers("/api/v1/auth/**","api/v1/email/send").permitAll()
+                        authorize.requestMatchers("/api/v1/auth/**","api/v1/email/send",
+                                                    "api/v1/user/email-verification").permitAll()
                                 .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                                 .anyRequest().authenticated()
                 )

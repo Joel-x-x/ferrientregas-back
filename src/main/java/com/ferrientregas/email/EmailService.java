@@ -4,6 +4,7 @@ import com.ferrientregas.user.UserEntity;
 import com.ferrientregas.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Async;
@@ -18,6 +19,9 @@ import static com.ferrientregas.email.EmailUtils.getEmailMessage;
 @RequiredArgsConstructor
 public class EmailService {
 
+    @Value("${spring.mail.username}")
+    private String fromEmail;
+
     private final UserRepository userRepository;
     @Autowired
     private JavaMailSender mailSender;
@@ -28,7 +32,7 @@ public class EmailService {
             UserEntity user = userRepository.findByEmail(emailRequest.to());
             SimpleMailMessage message = new SimpleMailMessage();
             message.setSubject("Verificación de email");
-            message.setFrom("systemgym0001@gmail.com");
+            message.setFrom(fromEmail);
             message.setTo(emailRequest.to());
             message.setText(getEmailMessage(emailRequest.name(), user.getToken()));
             mailSender.send(message);
