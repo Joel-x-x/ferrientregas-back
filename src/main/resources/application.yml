@@ -47,7 +47,9 @@ server:
 api:
   security:
     secret: ${JWT_SECRET}
-    expiration: 560000
+    expiration: 86400000
+    refresh-token:
+      expiration: 604800000
 
 #CORS
 cors:

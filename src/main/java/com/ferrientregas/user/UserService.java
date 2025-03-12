@@ -14,7 +14,7 @@ public class UserService {
     public VerificationResponse verifyEmailToken(VerificationRequest request){
         UserEntity user = userRepository.findByToken(request.token());
         if(user == null){
-            
+
         }
         var token = jwtService.generateToken(user);
 

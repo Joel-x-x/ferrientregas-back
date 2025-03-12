@@ -1,15 +1,21 @@
 package com.ferrientregas.auth;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ferrientregas.config.JwtService;
 import com.ferrientregas.role.RoleEntity;
 import com.ferrientregas.role.RoleRepository;
 import com.ferrientregas.user.UserEntity;
 import com.ferrientregas.user.UserRepository;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.io.IOException;
 
 @Service
 @RequiredArgsConstructor
@@ -36,9 +42,11 @@ public class AuthenticationService {
         userRepository.save(user);
 
         var jwtToken = jwtService.generateToken(user);
+        var refreshToken = jwtService.generateRefreshToken(user);
 
         return AuthenticationResponse.builder()
-                .token(jwtToken)
+                .accessToken(jwtToken)
+                .refreshToken(refreshToken)
                 .build();
     }
 
@@ -55,10 +63,51 @@ public class AuthenticationService {
                 .orElseThrow();
 
         var jwtToken = jwtService.generateToken(user);
+        var refreshToken = jwtService.generateRefreshToken(user);
 
         return AuthenticationResponse.builder()
-                .token(jwtToken)
+                .accessToken(jwtToken)
+                .refreshToken(refreshToken)
                 .role(user.getRole())
                 .build();
+    }
+
+    public void refreshToken(HttpServletResponse response,
+                             HttpServletRequest request) throws IOException {
+
+        final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+        final String refreshToken;
+        final String userEmail;
+
+        if(authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return;
+        }
+
+        refreshToken = authHeader.substring(7);
+        userEmail = jwtService.extractUsername(refreshToken);
+
+        /*
+         * When you got an userEmail and the user isn't authenticated, you get
+         * the userDetails from the database, after you check if the user and the
+         * token are valid, we return an UsernamePasswordAuthenticationToken
+         * and after that just update the SecurityContextHolder with this
+         * authentication token.
+         * */
+
+        if(userEmail != null ) {
+            var user = this.userRepository.findByEmail(userEmail);
+
+            if(jwtService.validateToken(refreshToken, user)) {
+                var accessToken = jwtService.generateToken(user);
+
+                var authResponse = AuthenticationResponse.builder()
+                        .accessToken(accessToken)
+                        .refreshToken(refreshToken)
+                        .build();
+
+                new ObjectMapper().writeValue(response.getOutputStream(),
+                        authResponse);
+            }
+        }
     }
 }
