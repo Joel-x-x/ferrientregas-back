@@ -16,6 +16,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
+import java.util.Random;
 import java.util.UUID;
 
 @Data
@@ -44,6 +45,8 @@ public class UserEntity implements UserDetails {
     @CreatedDate
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+    @Column(name = "token", unique = true)
+    private String token;
     private Boolean emailConfirmed;
     private Boolean status;
 
@@ -63,6 +66,9 @@ public class UserEntity implements UserDetails {
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
+        this.status = true;
+        this.emailConfirmed = false;
+        this.token = String.valueOf(new Random().nextInt(90000) + 10000);
     }
 
     @Override

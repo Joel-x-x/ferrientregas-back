@@ -37,25 +37,32 @@ dependencies {
     testImplementation("org.springframework.security:spring-security-test")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     developmentOnly("org.springframework.boot:spring-boot-devtools")
-//    https://mvnrepository.com/artifact/com.auth0/java-jwt
-//    implementation("com.auth0:java-jwt:4.5.0")
-    implementation ("io.jsonwebtoken:jjwt-api:0.12.6")
-    runtimeOnly ("io.jsonwebtoken:jjwt-impl:0.12.6")
-    runtimeOnly ("io.jsonwebtoken:jjwt-jackson:0.12.6")
-    // https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-starter-webmvc-ui
+
+    // JWT
+    implementation("io.jsonwebtoken:jjwt-api:0.12.6")
+    runtimeOnly("io.jsonwebtoken:jjwt-impl:0.12.6")
+    runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.12.6")
+
+    // OpenAPI (Swagger)
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.5")
-    // https://mvnrepository.com/artifact/jakarta.inject/jakarta.inject-api
+
+    // Jakarta Inject API
     implementation("jakarta.inject:jakarta.inject-api:2.0.1")
-    // https://mvnrepository.com/artifact/javax.mail/mail
-    implementation("javax.mail:mail:1.4.7")
-    // https://mvnrepository.com/artifact/javax.mail/javax.mail-api
-    implementation("javax.mail:javax.mail-api:1.6.2")
-    // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-thymeleaf
+
+    // Spring Boot Mail (Excluyendo jakarta.mail-api)
+    implementation("org.springframework.boot:spring-boot-starter-mail:3.4.3") {
+        exclude("jakarta.mail", "jakarta.mail-api")
+    }
+
+
+    // Jakarta Mail (Angus Mail)
+    implementation("org.eclipse.angus:jakarta.mail:2.0.3")
+
+    // Thymeleaf
     implementation("org.springframework.boot:spring-boot-starter-thymeleaf:3.4.3")
-    // https://mvnrepository.com/artifact/com.google.cloud/google-cloud-storage
+
+    // Google Cloud Storage
     implementation("com.google.cloud:google-cloud-storage:2.48.2")
-
-
 }
 
 tasks.withType<Test> {

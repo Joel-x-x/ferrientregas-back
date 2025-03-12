@@ -16,6 +16,24 @@ spring:
         format_sql: true
     hibernate:
       ddl-auto: update
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: systemgym0001@gmail.com
+    password: vswetusjdoxtufvs
+    default-encoding: UTF-8
+    properties:
+      mail:
+        mime:
+          charset: UTF
+        smtp:
+          writetimeout: 10000
+          connectiontimeout: 10000
+          timeout: 10000
+          auth: true
+          starttls:
+            enable: true
+            required: true
   flyway:
     baseline-on-migrate: true
 # Server configurations
@@ -25,9 +43,10 @@ server:
 # JWT
 api:
   security:
-    secret: aedb5581186c3017a42eb982bf1f6422005f2de1a3729d700f6ae44eb99deba3
+    secret: 9ddb40a3718e268a985f6ebedb4035183bde2af57fe1084b3c2208ff57bd4af3
     expiration: 560000
 
+#CORS
 cors:
   allowed:
     origins: http://localhost:4200

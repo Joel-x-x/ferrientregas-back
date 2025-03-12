@@ -1,6 +1,7 @@
 package com.ferrientregas.auth;
 
 import com.ferrientregas.config.JwtService;
+import com.ferrientregas.email.EmailService;
 import com.ferrientregas.role.RoleEntity;
 import com.ferrientregas.role.RoleRepository;
 import com.ferrientregas.user.UserEntity;
@@ -8,6 +9,7 @@ import com.ferrientregas.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -31,8 +33,6 @@ public class AuthenticationService {
                 .lastNames(request.getLastNames())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
-                .status(true)
-                .emailConfirmed(false)
                 .role(userRole)
                 .build();
         userRepository.save(user);
