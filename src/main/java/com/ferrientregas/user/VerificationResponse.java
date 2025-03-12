@@ -4,6 +4,7 @@ import lombok.Builder;
 
 @Builder
 public record VerificationResponse (
-        String message
+        String message,
+        String token
 ){
 }
