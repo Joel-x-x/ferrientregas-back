@@ -1,16 +1,11 @@
 package com.ferrientregas.auth;
 
 import com.ferrientregas.role.RoleEntity;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
-@Data
 @Builder
-@AllArgsConstructor
-@NoArgsConstructor
-public class AuthenticationResponse {
-    private String token;
-    private RoleEntity role;
+public record AuthenticationResponse (
+        String token,
+        RoleEntity role
+){
 }

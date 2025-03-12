@@ -1,14 +1,9 @@
 package com.ferrientregas.user;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
-@Data
 @Builder
-@AllArgsConstructor
-@NoArgsConstructor
-public class VerificationResponse {
-    private String message;
+public record VerificationResponse (
+        String message
+){
 }
