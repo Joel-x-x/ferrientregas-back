@@ -1,7 +1,6 @@
 package com.ferrientregas.auth;
 
 import com.ferrientregas.config.JwtService;
-import com.ferrientregas.email.EmailService;
 import com.ferrientregas.role.RoleEntity;
 import com.ferrientregas.role.RoleRepository;
 import com.ferrientregas.user.UserEntity;
@@ -9,7 +8,6 @@ import com.ferrientregas.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -29,10 +27,10 @@ public class AuthenticationService {
                         roleRepository.save(RoleEntity.builder()
                         .name("ROLE_USER").build()));
         var user = UserEntity.builder()
-                .firstNames(request.getFirstNames())
-                .lastNames(request.getLastNames())
-                .email(request.getEmail())
-                .password(passwordEncoder.encode(request.getPassword()))
+                .firstNames(request.firstNames())
+                .lastNames(request.lastNames())
+                .email(request.email())
+                .password(passwordEncoder.encode(request.password()))
                 .role(userRole)
                 .build();
         userRepository.save(user);
@@ -48,12 +46,12 @@ public class AuthenticationService {
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        request.getEmail(),
-                        request.getPassword()
+                        request.email(),
+                        request.password()
                 )
         );
 
-        var user = userRepository.findByEmailIgnoreCase(request.getEmail())
+        var user = userRepository.findByEmailIgnoreCase(request.email())
                 .orElseThrow();
 
         var jwtToken = jwtService.generateToken(user);

@@ -10,7 +10,7 @@ public class UserService {
     private final UserRepository userRepository;
 
     public VerificationResponse verifyEmailToken(VerificationRequest request){
-        UserEntity user = userRepository.findByToken(request.getToken());
+        UserEntity user = userRepository.findByToken(request.token());
         if(user == null){
         }
         user.setEmailConfirmed(true);

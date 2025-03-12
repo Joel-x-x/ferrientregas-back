@@ -25,12 +25,12 @@ public class EmailService {
     @Async
     public CompletableFuture<EmailResponse> sendVerificationEmail(EmailRequest emailRequest) {
         try{
-            UserEntity user = userRepository.findByEmail(emailRequest.getTo());
+            UserEntity user = userRepository.findByEmail(emailRequest.to());
             SimpleMailMessage message = new SimpleMailMessage();
             message.setSubject("Verificación de email");
             message.setFrom("systemgym0001@gmail.com");
-            message.setTo(emailRequest.getTo());
-            message.setText(getEmailMessage(emailRequest.getName(), user.getToken()));
+            message.setTo(emailRequest.to());
+            message.setText(getEmailMessage(emailRequest.name(), user.getToken()));
             mailSender.send(message);
         }catch(Exception e){
            throw new RuntimeException(e);
