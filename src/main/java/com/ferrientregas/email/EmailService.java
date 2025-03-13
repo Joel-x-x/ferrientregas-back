@@ -34,7 +34,7 @@ public class EmailService {
             message.setSubject("Verificación de email");
             message.setFrom(fromEmail);
             message.setTo(emailRequest.to());
-            message.setText(getEmailMessage(emailRequest.name(), user.getToken()));
+            message.setText(getEmailMessage(user.getFirstNames(), user.getToken()));
             mailSender.send(message);
         }catch(Exception e){
            throw new RuntimeException(e);
