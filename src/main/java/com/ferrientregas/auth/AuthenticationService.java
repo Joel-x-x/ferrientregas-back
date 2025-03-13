@@ -70,6 +70,7 @@ public class AuthenticationService {
                 .accessToken(jwtToken)
                 .refreshToken(refreshToken)
                 .role(user.getRole())
+                .verified(user.getEmailConfirmed().toString())
                 .build();
     }
 

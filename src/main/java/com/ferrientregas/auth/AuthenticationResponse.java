@@ -7,6 +7,7 @@ import lombok.Builder;
 public record AuthenticationResponse (
         String accessToken,
         String refreshToken,
-        RoleEntity role
+        RoleEntity role,
+        String verified
 ){
 }
