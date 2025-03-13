@@ -27,16 +27,14 @@ spring:
     default-encoding: UTF-8
     properties:
       mail:
-        mime:
-          charset: UTF
         smtp:
-          writetimeout: 10000
-          connectiontimeout: 10000
-          timeout: 10000
           auth: true
           starttls:
             enable: true
             required: true
+          ssl:
+            trust: smtp.gmail.com
+          ssl.protocols: TLSv1.2,TLSv1.3
   flyway:
     baseline-on-migrate: true
 # Server configurations
