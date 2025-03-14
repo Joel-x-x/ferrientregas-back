@@ -1,28 +1,36 @@
 package com.ferrientregas.deliverystatus;
 
+import com.ferrientregas.audit.Auditable;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 
-import java.util.UUID;
+import java.util.Random;
 
+import static java.time.LocalDateTime.now;
+
+@EqualsAndHashCode(callSuper = true)
+@ToString
 @Data
-@Builder
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
+@Inheritance(strategy = InheritanceType.JOINED)
 @Entity
 @Table(name = "deliveries_status")
-public class DeliveryStatusEntity {
+public class DeliveryStatusEntity extends Auditable {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(unique = true, updatable = false, nullable = false,
-            columnDefinition = "CHAR(36)")
-    @JdbcTypeCode(SqlTypes.CHAR)
-    private UUID id;
     private String statusName;
+
+    @PrePersist
+    protected void onCreate() {
+        this.setCreatedAt(now());
+        this.setUpdatedAt(now());
+        this.setDeletedAt(now());
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+       this.setUpdatedAt(now());
+    }
 }

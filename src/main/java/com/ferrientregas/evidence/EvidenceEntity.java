@@ -1,28 +1,39 @@
 package com.ferrientregas.evidence;
 
+import com.ferrientregas.audit.Auditable;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
+import java.util.Random;
 import java.util.UUID;
 
+import static java.time.LocalDateTime.now;
+
+@EqualsAndHashCode(callSuper = true)
+@ToString
 @Data
-@Builder
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
+@Inheritance(strategy = InheritanceType.JOINED)
 @Entity
 @Table(name = "evidences")
-public class EvidenceEntity {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(unique = true, updatable = false, nullable = false,
-            columnDefinition = "CHAR(36)")
-    @JdbcTypeCode(SqlTypes.CHAR)
-    private UUID id;
+public class EvidenceEntity extends Auditable {
     private String url;
+
+
+    @PrePersist
+    protected void onCreate() {
+        this.setCreatedAt(now());
+        this.setUpdatedAt(now());
+        this.setDeletedAt(now());
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+       this.setUpdatedAt(now());
+    }
 }
