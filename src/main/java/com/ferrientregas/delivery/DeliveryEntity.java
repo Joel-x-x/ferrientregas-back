@@ -1,15 +1,14 @@
 package com.ferrientregas.delivery;
 
+import com.ferrientregas.audit.Auditable;
 import com.ferrientregas.customer.CustomerEntity;
 import com.ferrientregas.deliverystatus.DeliveryStatusEntity;
 import com.ferrientregas.evidence.EvidenceEntity;
 import com.ferrientregas.paymenttype.PaymentTypeEntity;
 import com.ferrientregas.user.UserEntity;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
@@ -17,20 +16,19 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.UUID;
 
+import static java.time.LocalDateTime.now;
+
+@EqualsAndHashCode(callSuper = true)
+@ToString
 @Data
-@Builder
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
+@Inheritance(strategy = InheritanceType.JOINED)
 @Entity
 @Table(name = "deliveries")
-public class DeliveryEntity {
+public class DeliveryEntity extends Auditable {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(unique = true, updatable = false, nullable = false,
-            columnDefinition = "CHAR(36)")
-    @JdbcTypeCode(SqlTypes.CHAR)
-    private UUID id;
     private String numeration;
     private String invoiceNumber;
     private String deliveryDate;
@@ -60,4 +58,16 @@ public class DeliveryEntity {
     private String deliveryData;
     private String observations;
     private String comments;
+
+    @PrePersist
+    public void onCreate(){
+       this.setCreatedAt(now());
+       this.setUpdatedAt(now());
+       this.setDeletedAt(now());
+    }
+
+    @PreUpdate
+    public void onUpdate(){
+       this.setUpdatedAt(now());
+    }
 }

@@ -1,8 +1,10 @@
 package com.ferrientregas.role;
 
+import com.ferrientregas.audit.Auditable;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 import org.springframework.data.annotation.CreatedDate;
@@ -11,41 +13,31 @@ import org.springframework.data.annotation.LastModifiedDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-@Getter
-@Setter
+import static java.time.LocalDateTime.now;
+
+@EqualsAndHashCode(callSuper = true)
 @ToString
-@Builder
+@Data
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
+@Inheritance(strategy = InheritanceType.JOINED)
 @Entity
 @Table(name="roles")
-public class RoleEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(unique = true, updatable = false, nullable = false,
-            columnDefinition = "CHAR(36)")
-    @JdbcTypeCode(SqlTypes.CHAR)
-    private UUID id;
+public class RoleEntity extends Auditable {
     @NotNull
     @Column(nullable = false, unique = true)
     private String name;
 
-    @CreatedDate
-    @Column(name = "created_at", updatable = false, nullable = false)
-    private LocalDateTime createdAt;
-
-    @LastModifiedDate
-    @Column(name = "updated_at", nullable = false)
-    private LocalDateTime updatedAt;
-
     @PrePersist
     protected void onCreate() {
-        this.createdAt = LocalDateTime.now();
-        this.updatedAt = this.createdAt;
+        this.setCreatedAt(now());
+        this.setUpdatedAt(now());
+        this.setDeletedAt(now());
     }
 
     @PreUpdate
     protected void onUpdate() {
-        this.updatedAt = LocalDateTime.now();
+        this.setUpdatedAt(now());
     }
 }
