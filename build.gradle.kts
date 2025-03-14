@@ -63,6 +63,10 @@ dependencies {
 
     // Google Cloud Storage
     implementation("com.google.cloud:google-cloud-storage:2.48.2")
+
+    // https://mvnrepository.com/artifact/com.google.guava/guava
+    implementation("com.google.guava:guava:33.4.0-jre")
+
 }
 
 tasks.withType<Test> {

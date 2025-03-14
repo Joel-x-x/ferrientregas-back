@@ -49,6 +49,9 @@ api:
     refresh-token:
       expiration: 604800000
 
+gcp:
+  bucket:
+    name: ferrientregas
 #CORS
 cors:
   allowed:
