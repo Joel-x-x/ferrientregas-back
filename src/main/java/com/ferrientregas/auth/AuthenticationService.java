@@ -2,9 +2,13 @@ package com.ferrientregas.auth;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ferrientregas.config.JwtService;
+import com.ferrientregas.customer.CustomerEntity;
+import com.ferrientregas.customer.CustomerRepository;
 import com.ferrientregas.role.RoleEntity;
+import com.ferrientregas.role.RoleNotFoundException;
 import com.ferrientregas.role.RoleRepository;
 import com.ferrientregas.user.UserEntity;
+import com.ferrientregas.user.UserNotFoundException;
 import com.ferrientregas.user.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -16,43 +20,45 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
 public class AuthenticationService {
 
     private final UserRepository userRepository;
+    private final CustomerRepository customerRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
 
-    public AuthenticationResponse register(RegisterRequest request) {
-        RoleEntity userRole = roleRepository.findByName("ROLE_USER")
-                .orElseGet(() ->
-                        roleRepository.save(RoleEntity.builder()
-                        .name("ROLE_USER").build()));
-        var user = UserEntity.builder()
+    public void register(RegisterRequest request)
+            throws RoleNotFoundException {
+        // Get role CUSTOMER
+        RoleEntity role = roleRepository.findByName("CUSTOMER")
+                .orElse(this.roleRepository.save(RoleEntity.builder().name(
+                        "CUSTOMER").build()));
+
+        // Add role to new customer
+        Set<RoleEntity> roles = Set.of(role);
+
+        // Create customer
+        CustomerEntity customer = CustomerEntity.builder()
                 .firstNames(request.firstNames())
                 .lastNames(request.lastNames())
                 .email(request.email())
                 .password(passwordEncoder.encode(request.password()))
-                .role(userRole)
+                .roles(roles)
                 .build();
-        userRepository.save(user);
 
-        var jwtToken = jwtService.generateToken(user);
-        var refreshToken = jwtService.generateRefreshToken(user);
-
-        return AuthenticationResponse.builder()
-                .accessToken(jwtToken)
-                .refreshToken(refreshToken)
-                .role(user.getRole())
-                .build();
+        this.customerRepository.save(customer);
     }
 
 
-    public AuthenticationResponse authenticate(AuthenticationRequest request) {
+    public AuthenticationResponse authenticate(AuthenticationRequest request)
+            throws UserNotFoundException {
+        // Create manager
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.email(),
@@ -60,16 +66,18 @@ public class AuthenticationService {
                 )
         );
 
-        var user = userRepository.findByEmailIgnoreCase(request.email())
-                .orElseThrow();
+        // Find user
+        UserEntity user = userRepository.findByEmailIgnoreCase(request.email())
+                .orElseThrow(UserNotFoundException::new);
 
-        var jwtToken = jwtService.generateToken(user);
-        var refreshToken = jwtService.generateRefreshToken(user);
+        // Generate JWT
+        String jwtToken = jwtService.generateToken(user);
+        String refreshToken = jwtService.generateRefreshToken(user);
 
         return AuthenticationResponse.builder()
                 .accessToken(jwtToken)
                 .refreshToken(refreshToken)
-                .role(user.getRole())
+                .roles(user.getRoles())
                 .verified(user.getEmailConfirmed().toString())
                 .build();
     }

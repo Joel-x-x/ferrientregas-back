@@ -1,56 +1,45 @@
 package com.ferrientregas.user;
 
+import com.ferrientregas.audit.Auditable;
 import com.ferrientregas.role.RoleEntity;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import lombok.*;
-import org.hibernate.annotations.JdbcTypeCode;
+import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
-import org.hibernate.type.SqlTypes;
-import org.springframework.data.annotation.CreatedDate;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.List;
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
 
+import static java.time.LocalDateTime.now;
+
+@EqualsAndHashCode(callSuper = true)
+@ToString
 @Data
-@Builder
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
+@Inheritance(strategy = InheritanceType.JOINED)
 @Entity
 @Table(name = "users")
-public class UserEntity implements UserDetails {
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(unique = true, updatable = false, nullable = false,
-            columnDefinition = "CHAR(36)")
-    @JdbcTypeCode(SqlTypes.CHAR)
-    private UUID id;
+public class UserEntity extends Auditable implements UserDetails {
+
+    @Column(length = 50, nullable = false)
     private String firstNames;
+    @Column(length = 50, nullable = false)
     private String lastNames;
-    @Column(unique = true)
+    @Column(unique = true, nullable = false)
     private String email;
+    @Column(nullable = false)
     private String password;
-    private String profileImage;
-    @CreatedDate
-    @NotNull
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
-    @CreatedDate
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
+    private UUID profileImage;
+    private Boolean emailConfirmed;
     @Column(name = "token", unique = true)
     private String token;
-    private Boolean emailConfirmed;
-    private Boolean status;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER, targetEntity = RoleEntity.class)
     @JoinTable(
             name = "user_roles",
             joinColumns = @JoinColumn(
@@ -61,19 +50,27 @@ public class UserEntity implements UserDetails {
             )
     )
     @OnDelete(action = OnDeleteAction.CASCADE)
-    private RoleEntity role;
+    private Set<RoleEntity> roles;
 
     @PrePersist
     protected void onCreate() {
-        this.createdAt = LocalDateTime.now();
-        this.status = true;
+        this.setCreatedAt(now());
+        this.setUpdatedAt(now());
+        this.setDeletedAt(now());
         this.emailConfirmed = false;
         this.token = String.valueOf(new Random().nextInt(90000) + 10000);
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority("ROLE_" + role.getName()));
+        List<GrantedAuthority> authorities = new ArrayList<>();
+
+        // Add roles as GrantedAuthority
+        this.roles.forEach(role -> {
+            // Add role authority
+            authorities.add(new SimpleGrantedAuthority("ROLE_" + role.getName()));
+        });
+        return authorities;
     }
 
     @Override
