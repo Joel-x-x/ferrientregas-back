@@ -35,7 +35,8 @@ public class ImageService {
             }
 
             // Validar extensión de la imagen
-            String originalFileName = Objects.requireNonNull(createImageDto.file().getOriginalFilename());
+            String originalFileName = Objects.requireNonNull(createImageDto.file()
+                    .getOriginalFilename());
             if (!originalFileName.endsWith(".jpg") && !originalFileName.endsWith(".png")) {
                 throw new IntegrityValidation("La imagen debe tener extensión .jpg o .png.");
             }
@@ -55,12 +56,17 @@ public class ImageService {
             }
 
             // Subir la imagen al bucket
-            Blob blob = bucket.create(createImageDto.folderName() + "/" + fileName, createImageDto.file().getBytes(), createImageDto.file().getContentType());
+            Blob blob = bucket
+                    .create(createImageDto.folderName() + "/" + fileName,
+                            createImageDto.file().getBytes(), createImageDto
+                                    .file().getContentType());
 
             // Retornar el enlace público de la imagen
-            return "https://storage.googleapis.com/" + bucketName + "/" + createImageDto.folderName() + "/" + fileName;
+            return "https://storage.googleapis.com/" + bucketName + "/" +
+                    createImageDto.folderName() + "/" + fileName;
         } catch (Exception e) {
-            throw new IntegrityValidation("Ocurrió un error al subir la imagen: " + e.getMessage());
+            throw new IntegrityValidation("Ocurrió un error al subir la imagen: "
+                    + e.getMessage());
         }
     }
 
@@ -75,7 +81,8 @@ public class ImageService {
             }
 
             // Validar extensión del archivo
-            String originalFileName = Objects.requireNonNull(updateImageDto.file().getOriginalFilename());
+            String originalFileName = Objects.requireNonNull(updateImageDto.file()
+                    .getOriginalFilename());
             if (!originalFileName.endsWith(".jpg") && !originalFileName.endsWith(".png")) {
                 throw new IntegrityValidation("El archivo debe ser una imagen con extensión .jpg o .png.");
             }
@@ -84,9 +91,11 @@ public class ImageService {
             deleteImage(updateImageDto.folderName(), updateImageDto.oldFileName());
 
             // Subir la nueva imagen
-            return uploadImage(new CreateImageDto(updateImageDto.file(), updateImageDto.folderName()));
+            return uploadImage(new CreateImageDto(updateImageDto.file(),
+                    updateImageDto.folderName()));
         } catch (Exception e) {
-            throw new IntegrityValidation("Ocurrió un error al actualizar la imagen: " + e.getMessage());
+            throw new IntegrityValidation("Ocurrió un error al actualizar la imagen: "
+                    + e.getMessage());
         }
     }
 
