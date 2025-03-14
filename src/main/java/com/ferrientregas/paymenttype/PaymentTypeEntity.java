@@ -1,28 +1,36 @@
 package com.ferrientregas.paymenttype;
 
+import com.ferrientregas.audit.Auditable;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
+import java.util.Random;
 import java.util.UUID;
 
+import static java.time.LocalDateTime.now;
+
+@EqualsAndHashCode(callSuper = true)
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
 @Table(name = "payment_types")
-public class PaymentTypeEntity {
+public class PaymentTypeEntity extends Auditable {
+    private String name;
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(unique = true, updatable = false, nullable = false,
-            columnDefinition = "CHAR(36)")
-    @JdbcTypeCode(SqlTypes.CHAR)
-    private UUID id;
-    private String typeName;
+    @PrePersist
+    protected void onCreate() {
+        this.setCreatedAt(now());
+        this.setUpdatedAt(now());
+        this.setDeletedAt(now());
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.setCreatedAt(now());
+        if(this.isDeleted()) this.setDeletedAt(now());
+    }
 }

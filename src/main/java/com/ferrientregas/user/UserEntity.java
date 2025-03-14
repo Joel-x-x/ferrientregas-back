@@ -61,6 +61,12 @@ public class UserEntity extends Auditable implements UserDetails {
         this.token = String.valueOf(new Random().nextInt(90000) + 10000);
     }
 
+    @PreUpdate
+    protected void onUpdate() {
+        this.setCreatedAt(now());
+        if(this.isDeleted()) this.setDeletedAt(now());
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<GrantedAuthority> authorities = new ArrayList<>();

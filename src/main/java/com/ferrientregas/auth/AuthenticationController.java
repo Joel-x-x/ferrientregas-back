@@ -1,5 +1,6 @@
 package com.ferrientregas.auth;
 
+import com.ferrientregas.exception.ResultResponse;
 import com.ferrientregas.role.RoleNotFoundException;
 import com.ferrientregas.user.UserNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -19,19 +20,20 @@ public class AuthenticationController {
     private final AuthenticationService authenticationService;
 
     @PostMapping("/register")
-    @ResponseStatus(code = HttpStatus.CREATED)
-    public void register(
+    public ResponseEntity<ResultResponse<Object,String>> register(
             @RequestBody RegisterRequest request
     ) throws RoleNotFoundException {
-        this.authenticationService.register(request);
+        return ResponseEntity.ok(ResultResponse.success(
+                this.authenticationService.register(request), 201)
+        );
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthenticationResponse> login(
+    public ResponseEntity<ResultResponse<Object,String>> login(
             @RequestBody AuthenticationRequest request
     ) throws UserNotFoundException {
-
-        return ResponseEntity.ok(authenticationService.authenticate(request));
+        return ResponseEntity.ok(ResultResponse.success(
+                this.authenticationService.authenticate(request), 200));
     }
 
     @PostMapping("/refresh-token")

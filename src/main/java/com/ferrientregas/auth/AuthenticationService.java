@@ -33,7 +33,7 @@ public class AuthenticationService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
 
-    public void register(RegisterRequest request)
+    public RegisterResponse register(RegisterRequest request)
             throws RoleNotFoundException {
         // Get role CUSTOMER
         RoleEntity role = roleRepository.findByName("CUSTOMER")
@@ -44,15 +44,22 @@ public class AuthenticationService {
         Set<RoleEntity> roles = Set.of(role);
 
         // Create customer
-        CustomerEntity customer = CustomerEntity.builder()
+        CustomerEntity customer =
+                this.customerRepository.save(CustomerEntity.builder()
                 .firstNames(request.firstNames())
                 .lastNames(request.lastNames())
                 .email(request.email())
                 .password(passwordEncoder.encode(request.password()))
                 .roles(roles)
-                .build();
+                .build());
 
-        this.customerRepository.save(customer);
+        return new RegisterResponse(
+                customer.getId(),
+                customer.getFirstNames(),
+                customer.getLastNames(),
+                customer.getEmail(),
+                customer.getEmailConfirmed()
+        );
     }
 
 

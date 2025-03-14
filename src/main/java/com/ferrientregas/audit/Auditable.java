@@ -1,5 +1,6 @@
 package com.ferrientregas.audit;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -28,11 +29,14 @@ public abstract class Auditable implements Serializable {
     private boolean deleted = false;
 
     @Column(name = "created_at", nullable = false, updatable = false)
+    @JsonIgnore
     private LocalDateTime createdAt;
 
     @Column(name = "updated_at", nullable = false)
+    @JsonIgnore
     private LocalDateTime updatedAt;
 
     @Column(name = "deleted_at", nullable = false)
+    @JsonIgnore
     private LocalDateTime deletedAt;
 }
