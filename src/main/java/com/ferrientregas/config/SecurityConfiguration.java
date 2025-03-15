@@ -33,7 +33,7 @@ public class SecurityConfiguration {
                         authorize.requestMatchers("/api/v1/auth/**","api/v1/email/send",
                                                     "api/v1/user/email-verification").permitAll()
                                 .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
-                                .anyRequest().authenticated()
+                                .anyRequest().permitAll()
                 )
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)

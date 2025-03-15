@@ -5,7 +5,7 @@ import lombok.Builder;
 
 import java.util.Set;
 
-@Builder
+//@Builder
 public record DriverResponse (
     String firstNames,
     String lastNames,
