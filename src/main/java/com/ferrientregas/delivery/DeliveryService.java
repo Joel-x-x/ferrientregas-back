@@ -1,5 +1,6 @@
 package com.ferrientregas.delivery;
 
+import com.ferrientregas.deliverystatus.DeliveryStatusRepository;
 import com.ferrientregas.paymenttype.PaymentTypeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,7 +23,7 @@ public class DeliveryService {
                        .estimateHourInit(now())
                        .estimateHourEnd(null)
                        .deliveryStatus(
-                               deliveryStatusRepository.findByStatusName(
+                               deliveryStatusRepository.findByName(
                                        deliveryRequest.deliveryStatusName()
                                )
                        )

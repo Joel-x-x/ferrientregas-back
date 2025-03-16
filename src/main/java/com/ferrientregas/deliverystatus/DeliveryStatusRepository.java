@@ -8,4 +8,5 @@ import java.util.UUID;
 
 public interface DeliveryStatusRepository extends JpaRepository<DeliveryStatusEntity, UUID> {
     List<DeliveryStatusEntity> findAllByDeletedFalse();
+    DeliveryStatusEntity findByName(String name);
 }
