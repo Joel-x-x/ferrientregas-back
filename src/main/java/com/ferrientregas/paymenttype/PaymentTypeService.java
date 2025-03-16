@@ -77,7 +77,7 @@ public class PaymentTypeService {
         PaymentTypeEntity paymentType = paymentTypeRepository.findById(id)
                 .orElseThrow(PaymentTypeNotFoundException::new);
 
-        if(StringUtils.isBlank(request.name()))
+        if(!StringUtils.isBlank(request.name()))
             paymentType.setName(request.name());
 
         paymentTypeRepository.save(paymentType);
