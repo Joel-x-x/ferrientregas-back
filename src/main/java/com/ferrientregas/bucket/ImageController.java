@@ -4,7 +4,6 @@ import com.ferrientregas.bucket.dto.CreateImageDto;
 import com.ferrientregas.bucket.dto.UpdateImageDto;
 import com.ferrientregas.exception.ResultResponse;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

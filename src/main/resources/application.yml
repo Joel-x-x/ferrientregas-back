@@ -50,6 +50,7 @@ api:
       expiration: 604800000
 
 gcp:
+  GOOGLE_APPLICATION_CREDENTIALS: C:\ferridescuentos-1945f21a3151.json
   bucket:
     name: ferrientregas
 #CORS

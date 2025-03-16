@@ -9,12 +9,9 @@ import com.ferrientregas.user.UserEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
 
 import java.time.LocalTime;
 import java.util.List;
-import java.util.UUID;
 
 import static java.time.LocalDateTime.now;
 
