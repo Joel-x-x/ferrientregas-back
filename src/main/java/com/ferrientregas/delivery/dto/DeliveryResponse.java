@@ -1,4 +1,4 @@
-package com.ferrientregas.delivery;
+package com.ferrientregas.delivery.dto;
 
 import com.ferrientregas.customer.CustomerEntity;
 import com.ferrientregas.deliverystatus.DeliveryStatusEntity;
@@ -17,7 +17,7 @@ public record DeliveryResponse (
         String numeration,
         String invoiceNumber,
         @NotNull
-        String DeliveryDate,
+        String deliveryDate,
         @NotNull
         LocalTime estimateHourInit,
         @NotNull
