@@ -17,10 +17,10 @@ import static java.time.LocalDateTime.now;
 @AllArgsConstructor
 @Inheritance(strategy = InheritanceType.JOINED)
 @Entity
-@Table(name = "deliveries_status")
+@Table(name = "delivery_status")
 public class DeliveryStatusEntity extends Auditable {
 
-    private String statusName;
+    private String name;
 
     @PrePersist
     protected void onCreate() {
@@ -31,6 +31,7 @@ public class DeliveryStatusEntity extends Auditable {
 
     @PreUpdate
     protected void onUpdate() {
-       this.setUpdatedAt(now());
+        this.setUpdatedAt(now());
+        if(this.isDeleted()) this.setDeletedAt(now());
     }
 }
