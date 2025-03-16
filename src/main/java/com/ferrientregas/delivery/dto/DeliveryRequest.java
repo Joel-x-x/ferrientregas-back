@@ -1,8 +1,6 @@
-package com.ferrientregas.delivery;
+package com.ferrientregas.delivery.dto;
 
-import com.ferrientregas.customer.CustomerEntity;
 import com.ferrientregas.evidence.EvidenceEntity;
-import com.ferrientregas.user.UserEntity;
 import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalTime;
