@@ -4,6 +4,7 @@ import com.ferrientregas.paymenttype.dto.PaymentTypeRequest;
 import com.ferrientregas.paymenttype.dto.PaymentTypeResponse;
 import com.ferrientregas.paymenttype.dto.PaymentTypeUpdateRequest;
 import com.ferrientregas.paymenttype.exception.PaymentTypeNotFoundException;
+import io.micrometer.common.util.StringUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -76,7 +77,9 @@ public class PaymentTypeService {
         PaymentTypeEntity paymentType = paymentTypeRepository.findById(id)
                 .orElseThrow(PaymentTypeNotFoundException::new);
 
-        paymentType.setName(request.name());
+        if(StringUtils.isBlank(request.name()))
+            paymentType.setName(request.name());
+
         paymentTypeRepository.save(paymentType);
 
         return new PaymentTypeResponse(
