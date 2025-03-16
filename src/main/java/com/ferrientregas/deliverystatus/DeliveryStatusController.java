@@ -15,6 +15,7 @@ import java.net.URI;
 import java.util.UUID;
 
 @RestController
+@RequestMapping("api/v1/delivery-status")
 @RequiredArgsConstructor
 public class DeliveryStatusController {
 
