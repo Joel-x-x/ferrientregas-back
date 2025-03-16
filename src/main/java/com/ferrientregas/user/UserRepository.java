@@ -9,7 +9,7 @@ import java.util.UUID;
 @Repository
 public interface UserRepository extends JpaRepository<UserEntity, UUID> {
     Optional<UserEntity> findByEmailIgnoreCase(String email);
-    Optional<UserEntity> findUserEntityById(UUID id);
+    UserEntity findUserEntityById(UUID id);
     UserEntity findByEmail(String token);
     UserEntity findByToken(String token);
 }

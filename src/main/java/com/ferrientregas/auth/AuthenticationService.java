@@ -37,7 +37,7 @@ public class AuthenticationService {
             throws RoleNotFoundException {
         // Get role CUSTOMER
         RoleEntity role = roleRepository.findByName("CUSTOMER")
-                .orElse(this.roleRepository.save(RoleEntity.builder().name(
+                .orElseGet(()->roleRepository.save(RoleEntity.builder().name(
                         "CUSTOMER").build()));
 
         // Add role to new customer
