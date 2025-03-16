@@ -90,7 +90,7 @@ public class DeliveryStatusService {
     }
 
     /***
-     * Delete delivery status
+     * Delete delivery status soft delete
      *
      * @param id UUID
      * @return true Boolean

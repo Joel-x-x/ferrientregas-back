@@ -19,6 +19,9 @@ public class CustomerEntity extends UserEntity {
     private String fullName;
     private String identification;
     private String address;
+    private String addressMaps;
+    private String phone;
     private LocalDate birthDate;
+
 
 }
