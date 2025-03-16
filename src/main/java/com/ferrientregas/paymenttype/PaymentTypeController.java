@@ -54,7 +54,7 @@ public class PaymentTypeController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ResultResponse<Object, String>> update(@PathVariable UUID id, PaymentTypeUpdateRequest request) throws PaymentTypeNotFoundException {
+    public ResponseEntity<ResultResponse<Object, String>> update(@PathVariable UUID id, @RequestBody PaymentTypeUpdateRequest request) throws PaymentTypeNotFoundException {
         return ResponseEntity.ok(
                 ResultResponse.success(this.paymentTypeService.update(
                         id,
