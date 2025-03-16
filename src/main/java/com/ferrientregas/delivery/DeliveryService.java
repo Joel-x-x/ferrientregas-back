@@ -1,7 +1,9 @@
 package com.ferrientregas.delivery;
 
+import com.ferrientregas.customer.CustomerRepository;
 import com.ferrientregas.deliverystatus.DeliveryStatusRepository;
 import com.ferrientregas.paymenttype.PaymentTypeRepository;
+import com.ferrientregas.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +15,8 @@ public class DeliveryService {
    private final DeliveryRepository deliveryRepository;
    private final DeliveryStatusRepository deliveryStatusRepository;
    private final PaymentTypeRepository paymentTypeRepository;
+   private final UserRepository userRepository;
+   private final CustomerRepository customerRepository;
 
    public DeliveryResponse createDelivery(DeliveryRequest deliveryRequest) {
        DeliveryEntity delivery =
@@ -35,8 +39,16 @@ public class DeliveryService {
                        .credit(deliveryRequest.credit())
                        .total(deliveryRequest.total())
                        .evidence(deliveryRequest.evidence())
-                       .user(deliveryRequest.user())
-                       .customer(deliveryRequest.customer())
+                       .user(
+                               userRepository.findUserEntityById(
+                                       deliveryRequest.user()
+                               )
+                       )
+                       .customer(
+                               customerRepository.findCustomerEntityById(
+                                       deliveryRequest.customer()
+                               )
+                       )
                        .deliveryData(deliveryRequest.deliveryData())
                        .observations(deliveryRequest.observations())
                        .comments(deliveryRequest.comments())

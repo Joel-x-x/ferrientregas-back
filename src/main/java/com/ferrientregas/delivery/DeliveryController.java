@@ -9,13 +9,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/v1/delivery")
+@RequestMapping("/api/v1/deliveries")
 @RequiredArgsConstructor
 public class DeliveryController {
 
     private final DeliveryService deliveryService;
 
-    @PostMapping("/create")
+    @PostMapping
     public ResponseEntity<ResultResponse<Object,String>> create(
             @RequestBody DeliveryRequest deliveryRequest
     ){
