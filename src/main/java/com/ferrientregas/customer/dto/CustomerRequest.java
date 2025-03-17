@@ -16,12 +16,12 @@ public record CustomerRequest(
         String identification,
         @NotNull
         String address,
-        @NotBlank
+//        @NotBlank
         String addressMaps,
         @NotBlank
         @Size(min = 10)
         String phone,
-        @Past
+//        @Past
         LocalDate birthDate,
         // User
         @Email
