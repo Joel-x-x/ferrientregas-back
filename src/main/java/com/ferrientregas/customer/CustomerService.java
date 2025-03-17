@@ -4,12 +4,17 @@ import com.ferrientregas.customer.dto.CustomerRequest;
 import com.ferrientregas.customer.dto.CustomerResponse;
 import com.ferrientregas.customer.dto.CustomerUpdateRequest;
 import com.ferrientregas.customer.exception.CustomerNotFoundException;
+import com.ferrientregas.customer.utils.PasswordGenerator;
+import com.ferrientregas.role.RoleEntity;
+import com.ferrientregas.role.RoleRepository;
 import io.micrometer.common.util.StringUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -17,7 +22,8 @@ import java.util.UUID;
 public class CustomerService {
 
     private final CustomerRepository customerRepository;
-
+    private final RoleRepository roleRepository;
+    private final PasswordEncoder passwordEncoder;
     /***
      * List customers with paginate
      *
@@ -28,12 +34,14 @@ public class CustomerService {
         return this.customerRepository.findAllByDeletedIsFalse(pageable)
                 .map(x -> new CustomerResponse(
                         x.getId(),
-                        x.getFullName(),
+                        x.getFirstNames(),
+                        x.getLastNames(),
                         x.getIdentification(),
                         x.getAddress(),
                         x.getAddressMaps(),
                         x.getPhone(),
-                        x.getBirthDate()
+                        x.getBirthDate(),
+                        x.getEmail()
                 ));
     }
 
@@ -50,41 +58,59 @@ public class CustomerService {
 
         return new CustomerResponse(
                 customer.getId(),
-                customer.getFullName(),
+                customer.getFirstNames(),
+                customer.getLastNames(),
                 customer.getIdentification(),
                 customer.getAddress(),
                 customer.getAddressMaps(),
                 customer.getPhone(),
-                customer.getBirthDate()
+                customer.getBirthDate(),
+                customer.getEmail()
         );
     }
 
     /***
-     * Create customer
+     * Create customer and user default with aleatory password
      *
      * @param request customer
      * @return response
      */
     public CustomerResponse create(CustomerRequest request) {
+
+        // Get role CUSTOMER
+        RoleEntity role = roleRepository.findByName("CUSTOMER")
+                .orElseGet(()->roleRepository.save(RoleEntity.builder().name(
+                        "CUSTOMER").build()));
+
+        // Add role to new customer
+        Set<RoleEntity> roles = Set.of(role);
+
+        // Create only customer with user default password
         CustomerEntity customer = this.customerRepository.save(
                 CustomerEntity.builder()
-                        .fullName(request.fullname())
+                        .firstNames(request.firstNames())
+                        .lastNames(request.lastNames())
                         .identification(request.identification())
                         .address(request.address())
                         .addressMaps(request.addressMaps())
                         .phone(request.phone())
                         .birthDate(request.birthDate())
+                        .email(request.email())
+                        .password(passwordEncoder.encode(PasswordGenerator.generatePassword()))
+                        .roles(roles)
                         .build()
         );
 
         return new CustomerResponse(
                 customer.getId(),
-                customer.getFullName(),
+                customer.getFirstNames(),
+                customer.getLastNames(),
                 customer.getIdentification(),
                 customer.getAddress(),
                 customer.getAddressMaps(),
                 customer.getPhone(),
-                customer.getBirthDate()
+                customer.getBirthDate(),
+                customer.getEmail()
         );
     }
 
@@ -100,8 +126,11 @@ public class CustomerService {
         CustomerEntity customer = this.customerRepository.findById(id)
                 .orElseThrow(CustomerNotFoundException::new);
 
-        if (!StringUtils.isBlank(request.fullname())) {
-            customer.setFullName(request.fullname());
+        if (!StringUtils.isBlank(request.firstNames())) {
+            customer.setFirstNames(request.firstNames());
+        }
+        if (!StringUtils.isBlank(request.lastNames())) {
+            customer.setLastNames(request.lastNames());
         }
         if (!StringUtils.isBlank(request.identification())) {
             customer.setIdentification(request.identification());
@@ -121,12 +150,14 @@ public class CustomerService {
 
         return new CustomerResponse(
                 customer.getId(),
-                customer.getFullName(),
+                customer.getFirstNames(),
+                customer.getLastNames(),
                 customer.getIdentification(),
                 customer.getAddress(),
                 customer.getAddressMaps(),
                 customer.getPhone(),
-                customer.getBirthDate()
+                customer.getBirthDate(),
+                customer.getEmail()
         );
     }
 

@@ -4,7 +4,8 @@ import java.time.LocalDate;
 import java.util.UUID;
 
 public record CustomerUpdateRequest(
-        String fullname,
+        String firstNames,
+        String lastNames,
         String identification,
         String address,
         String addressMaps,

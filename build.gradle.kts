@@ -67,6 +67,10 @@ dependencies {
     // https://mvnrepository.com/artifact/com.google.guava/guava
     implementation("com.google.guava:guava:33.4.0-jre")
 
+    // https://mvnrepository.com/artifact/org.apache.commons/commons-lang3
+    implementation("org.apache.commons:commons-lang3:3.17.0")
+
+
 }
 
 tasks.withType<Test> {
