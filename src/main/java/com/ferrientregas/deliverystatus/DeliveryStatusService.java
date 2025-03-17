@@ -103,6 +103,8 @@ public class DeliveryStatusService {
 
         deliveryStatus.setDeleted(true);
 
+        this.deliveryStatusRepository.save(deliveryStatus);
+
         return true;
     }
 }
