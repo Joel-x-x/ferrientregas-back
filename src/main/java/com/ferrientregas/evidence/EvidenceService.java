@@ -1,5 +1,6 @@
 package com.ferrientregas.evidence;
 
+import com.ferrientregas.evidence.dto.EvidenceMapper;
 import com.ferrientregas.evidence.dto.EvidenceRequest;
 import com.ferrientregas.evidence.dto.EvidenceResponse;
 import com.ferrientregas.evidence.dto.EvidenceUpdateRequest;
@@ -20,49 +21,32 @@ public class EvidenceService {
 
     public EvidenceResponse getEvidenceById(UUID id)
             throws EvidenceNotFoundException {
-        EvidenceEntity evidence = evidenceRepository.findById(id)
+        return this.evidenceRepository.findById(id)
+                .map(EvidenceMapper::toEvidenceResponse)
                 .orElseThrow(EvidenceNotFoundException::new);
-        return new EvidenceResponse(
-                evidence.getId(),
-                evidence.getUrl()
-        );
     }
 
     public Page<EvidenceResponse> getEvidences(Pageable pageable) {
-        return this.evidenceRepository.findAllByDeletedFalse(pageable)
-                .map(evidence-> new EvidenceResponse(
-                  evidence.id(),
-                  evidence.url()
-                ));
+        return this.evidenceRepository.findAllByDeletedIsFalse(pageable)
+                .map(EvidenceMapper::toEvidenceResponse);
     }
 
     public EvidenceResponse createEvidence(EvidenceRequest evidenceRequest) {
-       EvidenceEntity evidence = evidenceRepository.save(EvidenceEntity
-                       .builder()
-                       .url(evidenceRequest.url())
-               .build()
-       );
-
-       return new EvidenceResponse(
-               evidence.getId(),
-               evidence.getUrl()
-       );
+       EvidenceEntity evidence = createAndSaveEvidence(evidenceRequest);
+       return EvidenceMapper.toEvidenceResponse(evidence);
     }
 
-    public EvidenceResponse updateEvidence
-            (UUID id, EvidenceUpdateRequest evidenceUpdateRequest) throws EvidenceNotFoundException {
+    public EvidenceResponse updateEvidence(
+                    UUID id, EvidenceUpdateRequest evidenceUpdateRequest
+    ) throws EvidenceNotFoundException {
        EvidenceEntity evidence = evidenceRepository.findById(id)
                .orElseThrow(EvidenceNotFoundException::new);
-
        if(!StringUtils.isBlank(evidence.getUrl())) {
           evidence.setUrl(evidenceUpdateRequest.url());
        }
        evidenceRepository.save(evidence);
 
-        return new EvidenceResponse(
-                evidence.getId(),
-                evidence.getUrl()
-        );
+       return EvidenceMapper.toEvidenceResponse(evidence);
     }
 
     public Boolean deleteEvidence(UUID id) throws EvidenceNotFoundException {
@@ -71,6 +55,14 @@ public class EvidenceService {
        evidence.setDeleted(true);
        evidenceRepository.save(evidence);
        return true;
+    }
+
+
+    private EvidenceEntity createAndSaveEvidence(EvidenceRequest evidenceRequest){
+        return this.evidenceRepository.save(EvidenceEntity.builder()
+                .url(evidenceRequest.url())
+                .build()
+        );
     }
 
 }

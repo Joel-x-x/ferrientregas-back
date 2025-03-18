@@ -1,5 +1,6 @@
 package com.ferrientregas.deliverystatus;
 
+import com.ferrientregas.deliverystatus.dto.DeliveryStatusMapper;
 import com.ferrientregas.deliverystatus.dto.DeliveryStatusRequest;
 import com.ferrientregas.deliverystatus.dto.DeliveryStatusResponse;
 import com.ferrientregas.deliverystatus.dto.DeliveryStatusUpdateRequest;
@@ -18,62 +19,22 @@ public class DeliveryStatusService {
 
     private final DeliveryStatusRepository deliveryStatusRepository;
 
-    /***
-     * List delivery status
-     *
-     * @return responses
-     */
     public List<DeliveryStatusResponse> list() {
         return this.deliveryStatusRepository.findAllByDeletedFalse().stream()
-                .map(x -> new DeliveryStatusResponse(
-                        x.getId(),
-                        x.getName()
-                )).toList();
+                .map(DeliveryStatusMapper::toDeliveryStatusResponse).toList();
     }
 
-    /***
-     * Get delivery status
-     *
-     * @param id UUID
-     * @return response
-     * @throws DeliveryStatusNotFoundException not found exception
-     */
     public DeliveryStatusResponse get(UUID id) throws DeliveryStatusNotFoundException {
-        DeliveryStatusEntity deliveryStatus = this.deliveryStatusRepository
-                .findById(id)
+        return this.deliveryStatusRepository.findById(id)
+                .map(DeliveryStatusMapper::toDeliveryStatusResponse)
                 .orElseThrow(DeliveryStatusNotFoundException::new);
-
-        return new DeliveryStatusResponse(
-                deliveryStatus.getId(),
-                deliveryStatus.getName());
     }
 
-    /***
-     * Create delivery status
-     *
-     * @param request delivery status
-     * @return response
-     */
     public DeliveryStatusResponse create(DeliveryStatusRequest request) {
-        DeliveryStatusEntity deliveryStatus = this.deliveryStatusRepository
-                .save(DeliveryStatusEntity.builder()
-                        .name(request.name())
-                        .build());
-
-        return new DeliveryStatusResponse(
-                deliveryStatus.getId(),
-                deliveryStatus.getName()
-        );
+        DeliveryStatusEntity deliveryStatus = createAndSaveDeliveryStatus(request);
+        return DeliveryStatusMapper.toDeliveryStatusResponse(deliveryStatus);
     }
 
-    /***
-     * Update delivery status
-     *
-     * @param request delivery status
-     * @param id UUID
-     * @return response
-     * @throws DeliveryStatusNotFoundException not found exception
-     */
     public DeliveryStatusResponse update(DeliveryStatusUpdateRequest request,
      UUID id) throws DeliveryStatusNotFoundException {
         DeliveryStatusEntity deliveryStatus = this.deliveryStatusRepository
@@ -82,29 +43,24 @@ public class DeliveryStatusService {
 
         deliveryStatus.setName(request.name());
         this.deliveryStatusRepository.save(deliveryStatus);
-
-        return new DeliveryStatusResponse(
-                deliveryStatus.getId(),
-                deliveryStatus.getName()
-        );
+        return DeliveryStatusMapper.toDeliveryStatusResponse(deliveryStatus);
     }
 
-    /***
-     * Delete delivery status soft delete
-     *
-     * @param id UUID
-     * @return true Boolean
-     * @throws DeliveryStatusNotFoundException not found exception
-     */
     public Boolean delete(UUID id) throws DeliveryStatusNotFoundException {
         DeliveryStatusEntity deliveryStatus = this.deliveryStatusRepository
                 .findById(id)
                 .orElseThrow(DeliveryStatusNotFoundException::new);
-
         deliveryStatus.setDeleted(true);
-
         this.deliveryStatusRepository.save(deliveryStatus);
 
         return true;
+    }
+
+
+    private DeliveryStatusEntity createAndSaveDeliveryStatus(
+            DeliveryStatusRequest request) {
+        return this.deliveryStatusRepository.save(DeliveryStatusEntity.builder()
+                .name(request.name())
+                .build());
     }
 }

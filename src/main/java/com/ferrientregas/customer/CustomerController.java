@@ -23,7 +23,8 @@ public class CustomerController {
     private final CustomerService customerService;
 
     @GetMapping
-    public ResponseEntity<ResultResponse<Object, String>> paginate(Pageable pageable) {
+    public ResponseEntity<ResultResponse<Object, String>> getAll(
+            Pageable pageable) {
         return ResponseEntity.ok(
                 ResultResponse.success(
                         this.customerService.list(pageable), 200
@@ -32,22 +33,17 @@ public class CustomerController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ResultResponse<Object, String>> get(@PathVariable UUID id)
-            throws CustomerNotFoundException {
+    public ResponseEntity<ResultResponse<Object, String>> get(
+            @PathVariable UUID id) throws CustomerNotFoundException {
         return ResponseEntity.ok(
-                ResultResponse.success(
-                        this.customerService.get(id),
-                        200
-                )
+                ResultResponse.success(this.customerService.get(id), 200)
         );
     }
 
     @PostMapping
     public ResponseEntity<ResultResponse<Object, String>> create(
-            @Validated
-            @RequestBody CustomerRequest request) {
+            @Validated @RequestBody CustomerRequest request) {
         CustomerResponse response = this.customerService.create(request);
-
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/{id}")
@@ -55,9 +51,7 @@ public class CustomerController {
                 .toUri();
 
         return ResponseEntity.created(location)
-                .body(ResultResponse.success(
-                        response, 201
-                ));
+                .body(ResultResponse.success(response, 201));
     }
 
     @PutMapping("/{id}")
@@ -67,9 +61,7 @@ public class CustomerController {
             @PathVariable UUID id) throws CustomerNotFoundException {
         return ResponseEntity.ok(
                 ResultResponse.success(
-                        this.customerService.update(request, id), 200
-                )
-        );
+                        this.customerService.update(request, id), 200));
     }
 
     @DeleteMapping("/{id}")
@@ -77,9 +69,6 @@ public class CustomerController {
             @PathVariable UUID id) throws CustomerNotFoundException {
         return ResponseEntity.ok(
                 ResultResponse.success(
-                        this.customerService.delete(id),
-                        200
-                )
-        );
+                        this.customerService.delete(id), 200));
     }
 }

@@ -23,6 +23,7 @@ public class SwaggerConfiguration {
       .info(new Info()
           .title("API GESTION DE ENTREGAS EN FERRIDESCUENTOS")
           .version("1.0")
-          .description("Documentación interactiva de la API para gestionar los modulos del Software FerriFlete."));
+          .description("Documentación interactiva de la API para gestionar " +
+                  "los modulos del Software FerriFlete."));
   }
 }

@@ -1,5 +1,6 @@
 package com.ferrientregas.paymenttype;
 
+import com.ferrientregas.paymenttype.dto.PaymentTypeMapper;
 import com.ferrientregas.paymenttype.dto.PaymentTypeRequest;
 import com.ferrientregas.paymenttype.dto.PaymentTypeResponse;
 import com.ferrientregas.paymenttype.dto.PaymentTypeUpdateRequest;
@@ -17,93 +18,50 @@ public class PaymentTypeService {
 
     private final PaymentTypeRepository paymentTypeRepository;
 
-    /***
-     * List payment types
-     *
-     * @return responses
-     */
     public List<PaymentTypeResponse> list() {
-        return this.
-                paymentTypeRepository.findAllByDeletedFalse().stream()
-                .map(x -> new PaymentTypeResponse(x.getId(), x.getName()))
-                .toList();
+        return this.paymentTypeRepository.findAllByDeletedFalse().stream()
+                .map(PaymentTypeMapper::toPaymentTypeResponse).toList();
     }
 
-    /***
-     * Get payment type
-     *
-     * @param id UUID
-     * @return response
-     * @throws PaymentTypeNotFoundException not found entity
-     */
-    public PaymentTypeResponse get(UUID id) throws PaymentTypeNotFoundException {
-        PaymentTypeEntity paymentType = paymentTypeRepository.findById(id)
+    public PaymentTypeResponse get(UUID id) throws PaymentTypeNotFoundException{
+        return paymentTypeRepository.findById(id)
+                .map(PaymentTypeMapper::toPaymentTypeResponse)
                 .orElseThrow(PaymentTypeNotFoundException::new);
-
-        return new PaymentTypeResponse(
-                paymentType.getId(),
-                paymentType.getName()
-        );
     }
 
-    /**
-     * Creates a new payment type.
-     *
-     * @param request the request containing the payment type details
-     * @return the response containing the created payment type details
-     */
     public PaymentTypeResponse create(PaymentTypeRequest request) {
-        PaymentTypeEntity paymentType =
-                paymentTypeRepository.save(PaymentTypeEntity
-                        .builder()
-                        .name(request.name())
-                        .build());
-
-        return new PaymentTypeResponse(
-                paymentType.getId(),
-                paymentType.getName()
-        );
+        PaymentTypeEntity paymentType =createAndSavePaymentType(request);
+        return PaymentTypeMapper.toPaymentTypeResponse(paymentType);
     }
 
-    /***
-     * Update payment type.
-     *
-     * @param id UUID
-     * @param request payment type request
-     * @return response
-     * @throws PaymentTypeNotFoundException not found entity
-     */
-    public PaymentTypeResponse update(UUID id, PaymentTypeUpdateRequest request) throws PaymentTypeNotFoundException {
+    public PaymentTypeResponse update(UUID id, PaymentTypeUpdateRequest request)
+            throws PaymentTypeNotFoundException {
         PaymentTypeEntity paymentType = paymentTypeRepository.findById(id)
                 .orElseThrow(PaymentTypeNotFoundException::new);
 
         if(!StringUtils.isBlank(request.name()))
             paymentType.setName(request.name());
-
         paymentTypeRepository.save(paymentType);
 
-        return new PaymentTypeResponse(
-                paymentType.getId(),
-                paymentType.getName()
-        );
+        return PaymentTypeMapper.toPaymentTypeResponse(paymentType);
     }
 
-    /***
-     * Delete payment type
-     *
-     * @param id UUID
-     * @return true Boolean
-     * @throws PaymentTypeNotFoundException not found entity
-     */
     public Boolean delete(UUID id) throws PaymentTypeNotFoundException {
         PaymentTypeEntity paymentType = paymentTypeRepository.findById(id)
                 .orElseThrow(PaymentTypeNotFoundException::new);
 
         paymentType.setDeleted(true);
-
         this.paymentTypeRepository.save(paymentType);
 
         return true;
     }
 
+
+    private PaymentTypeEntity createAndSavePaymentType(
+            PaymentTypeRequest paymentTypeRequest){
+        return this.paymentTypeRepository.save(
+                PaymentTypeEntity.builder()
+                        .name(paymentTypeRequest.name())
+                        .build());
+    }
 }

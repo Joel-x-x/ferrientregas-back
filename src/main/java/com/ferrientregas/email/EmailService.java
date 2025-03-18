@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.concurrent.CompletableFuture;
 
-import static com.ferrientregas.email.EmailUtils.getEmailMessage;
+import static com.ferrientregas.email.utils.EmailUtils.getEmailMessage;
 
 @Service
 @RequiredArgsConstructor

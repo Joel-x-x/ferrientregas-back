@@ -1,5 +1,6 @@
 package com.ferrientregas.delivery;
 
+import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -12,5 +13,6 @@ import java.util.UUID;
 public interface DeliveryRepository extends JpaRepository<DeliveryEntity,
         UUID> {
     Optional<DeliveryEntity> findById(UUID id);
-    Page<DeliveryEntity> findAllByDeletedFalse(Pageable pageable);
+    Page<DeliveryEntity> findAllByDeletedIsFalse(Pageable pageable);
+
 }

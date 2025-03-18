@@ -1,6 +1,7 @@
 package com.ferrientregas.delivery;
 
 import com.ferrientregas.customer.CustomerRepository;
+import com.ferrientregas.delivery.dto.DeliveryMapper;
 import com.ferrientregas.delivery.dto.DeliveryRequest;
 import com.ferrientregas.delivery.dto.DeliveryResponse;
 import com.ferrientregas.delivery.dto.DeliveryUpdateRequest;
@@ -28,122 +29,87 @@ public class DeliveryService {
    private final CustomerRepository customerRepository;
 
     public DeliveryResponse getDelivery(UUID id) throws DeliveryNotFoundException {
-        DeliveryEntity delivery = this.deliveryRepository.findById(id)
+        return this.deliveryRepository.findById(id)
+                .map(DeliveryMapper::toDeliveryResponse)
                 .orElseThrow(DeliveryNotFoundException::new);
-        return new DeliveryResponse(
-                delivery.getId(),
-                delivery.getNumeration(),
-                delivery.getInvoiceNumber(),
-                delivery.getDeliveryDate(),
-                delivery.getEstimateHourInit(),
-                delivery.getEstimateHourEnd(),
-                delivery.getDeliveryStatus(),
-                delivery.getPaymentType(),
-                delivery.getCredit(),
-                delivery.getTotal(),
-                delivery.getEvidence(),
-                delivery.getUser(),
-                delivery.getCustomer(),
-                delivery.getDeliveryData(),
-                delivery.getObservations(),
-                delivery.getComments()
-        );
     }
 
-
     public Page<DeliveryResponse> listDelivery(Pageable pageable){
-        return this.deliveryRepository.findAllByDeletedFalse(pageable)
-                .map(
-                        delivery-> new DeliveryResponse(
-                                delivery.getId(),
-                                delivery.getNumeration(),
-                                delivery.getInvoiceNumber(),
-                                delivery.getDeliveryDate(),
-                                delivery.getEstimateHourInit(),
-                                delivery.getEstimateHourEnd(),
-                                delivery.getDeliveryStatus(),
-                                delivery.getPaymentType(),
-                                delivery.getCredit(),
-                                delivery.getTotal(),
-                                delivery.getEvidence(),
-                                delivery.getUser(),
-                                delivery.getCustomer(),
-                                delivery.getDeliveryData(),
-                                delivery.getObservations(),
-                                delivery.getComments()
-                        ));
+        return this.deliveryRepository.findAllByDeletedIsFalse(pageable)
+                .map(DeliveryMapper::toDeliveryResponse);
     }
 
    public DeliveryResponse createDelivery(DeliveryRequest deliveryRequest) {
-       DeliveryEntity delivery =
-               this.deliveryRepository.save(DeliveryEntity.builder()
-                       .numeration(deliveryRequest.numeration())
-                       .invoiceNumber(deliveryRequest.invoiceNumber())
-                       .deliveryDate(deliveryRequest.DeliveryDate())
-                       .estimateHourInit(now())
-                       .estimateHourEnd(null)
-                       .deliveryStatus(
-                               deliveryStatusRepository.findByName(
-                                       deliveryRequest.deliveryStatusName()
-                               )
-                       )
-                       .paymentType(
-                               paymentTypeRepository.findByName(
-                                       deliveryRequest.paymentType()
-                               )
-                       )
-                       .credit(deliveryRequest.credit())
-                       .total(deliveryRequest.total())
-                       .evidence(deliveryRequest.evidence())
-                       .user(
-                               userRepository.findUserEntityById(
-                                       deliveryRequest.user()
-                               )
-                       )
-                       .customer(
-                               customerRepository.findCustomerEntityById(
-                                       deliveryRequest.customer()
-                               )
-                       )
-                       .deliveryData(deliveryRequest.deliveryData())
-                       .observations(deliveryRequest.observations())
-                       .comments(deliveryRequest.comments())
-                       .build()
-               );
-       return new DeliveryResponse(
-               delivery.getId(),
-               delivery.getNumeration(),
-               delivery.getInvoiceNumber(),
-               delivery.getDeliveryDate(),
-               delivery.getEstimateHourInit(),
-               delivery.getEstimateHourEnd(),
-               delivery.getDeliveryStatus(),
-               delivery.getPaymentType(),
-               delivery.getCredit(),
-               delivery.getTotal(),
-               delivery.getEvidence(),
-               delivery.getUser(),
-               delivery.getCustomer(),
-               delivery.getDeliveryData(),
-               delivery.getObservations(),
-               delivery.getComments()
-       );
+       DeliveryEntity delivery = createAndSaveDelivery(deliveryRequest);
+       return DeliveryMapper.toDeliveryResponse(delivery);
    }
 
     public DeliveryResponse updateDelivery(UUID id,
                                            DeliveryUpdateRequest deliveryRequest)
-    throws DeliveryNotFoundException {
+            throws DeliveryNotFoundException {
        DeliveryEntity delivery = deliveryRepository.findById(id)
                .orElseThrow(DeliveryNotFoundException::new);
+        updateDeliveryFields(delivery, deliveryRequest);
+        return DeliveryMapper.toDeliveryResponse(delivery);
+    }
 
-       if(!StringUtils.isBlank(delivery.getNumeration())) {
-          delivery.setNumeration(deliveryRequest.numeration());
+   public Boolean deleteDelivery(UUID id) throws DeliveryNotFoundException {
+      DeliveryEntity delivery = this.deliveryRepository.findById(id)
+              .orElseThrow(DeliveryNotFoundException::new);
+      delivery.setDeleted(true);
+      this.deliveryRepository.save(delivery);
+
+      return true;
+   }
+
+   private DeliveryEntity createAndSaveDelivery(DeliveryRequest deliveryRequest) {
+       return this.deliveryRepository.save(DeliveryEntity.builder()
+               .numeration(deliveryRequest.numeration())
+               .invoiceNumber(deliveryRequest.invoiceNumber())
+               .deliveryDate(deliveryRequest.DeliveryDate())
+               .estimateHourInit(now())
+               .estimateHourEnd(null)
+               .deliveryStatus(
+                       deliveryStatusRepository.findByName(
+                               deliveryRequest.deliveryStatusName()
+                       )
+               )
+               .paymentType(
+                       paymentTypeRepository.findByName(
+                               deliveryRequest.paymentType()
+                       )
+               )
+               .credit(deliveryRequest.credit())
+               .total(deliveryRequest.total())
+               .evidence(deliveryRequest.evidence())
+               .user(
+                       userRepository.findUserEntityById(
+                               deliveryRequest.user()
+                       )
+               )
+               .customer(
+                       customerRepository.findCustomerEntityById(
+                               deliveryRequest.customer()
+                       )
+               )
+               .deliveryData(deliveryRequest.deliveryData())
+               .observations(deliveryRequest.observations())
+               .comments(deliveryRequest.comments())
+               .build()
+       );
+   }
+
+   private void updateDeliveryFields(DeliveryEntity delivery,
+                                     DeliveryUpdateRequest deliveryRequest) {
+
+       if(!StringUtils.isBlank(deliveryRequest.numeration())) {
+           delivery.setNumeration(deliveryRequest.numeration());
        }
-       if(!StringUtils.isBlank(delivery.getInvoiceNumber())) {
+       if(!StringUtils.isBlank(deliveryRequest.invoiceNumber())) {
            delivery.setInvoiceNumber(deliveryRequest.invoiceNumber());
        }
-       if(!StringUtils.isBlank(delivery.getDeliveryDate())) {
-           delivery.setDeliveryDate(deliveryRequest.DeliveryDate());
+       if(!StringUtils.isBlank(deliveryRequest.deliveryDate())) {
+           delivery.setDeliveryDate(deliveryRequest.deliveryDate());
        }
        delivery.setEstimateHourInit(now());
        delivery.setEstimateHourEnd(now());
@@ -173,35 +139,6 @@ public class DeliveryService {
        delivery.setDeliveryData(deliveryRequest.deliveryData());
        delivery.setObservations(deliveryRequest.observations());
        delivery.setComments(deliveryRequest.comments());
-
-        return new DeliveryResponse(
-                delivery.getId(),
-                delivery.getNumeration(),
-                delivery.getInvoiceNumber(),
-                delivery.getDeliveryDate(),
-                delivery.getEstimateHourInit(),
-                delivery.getEstimateHourEnd(),
-                delivery.getDeliveryStatus(),
-                delivery.getPaymentType(),
-                delivery.getCredit(),
-                delivery.getTotal(),
-                delivery.getEvidence(),
-                delivery.getUser(),
-                delivery.getCustomer(),
-                delivery.getDeliveryData(),
-                delivery.getObservations(),
-                delivery.getComments()
-        );
-    }
-
-   public Boolean deleteDelivery(UUID id) throws DeliveryNotFoundException {
-      DeliveryEntity delivery = this.deliveryRepository.findById(id)
-              .orElseThrow(DeliveryNotFoundException::new);
-
-      delivery.setDeleted(true);
-      this.deliveryRepository.save(delivery);
-
-      return true;
    }
 
 

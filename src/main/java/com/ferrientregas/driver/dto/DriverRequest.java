@@ -1,4 +1,4 @@
-package com.ferrientregas.driver;
+package com.ferrientregas.driver.dto;
 
 import java.util.UUID;
 

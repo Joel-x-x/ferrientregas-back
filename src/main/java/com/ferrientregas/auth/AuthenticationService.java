@@ -9,7 +9,6 @@ import com.ferrientregas.config.JwtService;
 import com.ferrientregas.customer.CustomerEntity;
 import com.ferrientregas.customer.CustomerRepository;
 import com.ferrientregas.role.RoleEntity;
-import com.ferrientregas.role.RoleNotFoundException;
 import com.ferrientregas.role.RoleRepository;
 import com.ferrientregas.user.UserEntity;
 import com.ferrientregas.user.exception.UserNotFoundException;
@@ -24,6 +23,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.Set;
 
 @Service
@@ -36,61 +36,75 @@ public class AuthenticationService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
+    private final ObjectMapper objectMapper;
+    private static final String CUSTOMER_ROLE = "CUSTOMER";
 
-    public RegisterResponse register(RegisterRequest request)
-            throws RoleNotFoundException {
-        // Get role CUSTOMER
-        RoleEntity role = roleRepository.findByName("CUSTOMER")
-                .orElseGet(()->roleRepository.save(RoleEntity.builder().name(
-                        "CUSTOMER").build()));
-
+    public RegisterResponse register(RegisterRequest request) {
+        //Generate Role
+        RoleEntity role = getOrCreateRole();
         // Add role to new customer
-        Set<RoleEntity> roles = Set.of(role);
-
+        Set<RoleEntity> roles = Collections.singleton(role);
         // Create customer
-        CustomerEntity customer =
-                this.customerRepository.save(CustomerEntity.builder()
-                .firstNames(request.firstNames())
-                .lastNames(request.lastNames())
-                .email(request.email())
-                .password(passwordEncoder.encode(request.password()))
+        CustomerEntity customer = createAndSaveCustomer(roles,request);
+        return createRegisterResponseByCustomer(customer);
+    }
+
+    private RoleEntity getOrCreateRole(){
+
+        return this.roleRepository.findByName(CUSTOMER_ROLE)
+                .orElseGet(()->roleRepository.save(RoleEntity.builder()
+                        .name(CUSTOMER_ROLE).build()));
+    }
+
+    private CustomerEntity createAndSaveCustomer(Set<RoleEntity> roles,
+                                            RegisterRequest registerRequest) {
+
+        return this.customerRepository.save(CustomerEntity.builder()
+                .firstNames(registerRequest.firstNames())
+                .lastNames(registerRequest.lastNames())
+                .email(registerRequest.email())
+                .password(passwordEncoder.encode(registerRequest.password()))
                 .roles(roles)
                 .build());
+    }
 
-        return new RegisterResponse(
-                customer.getId(),
-                customer.getFirstNames(),
-                customer.getLastNames(),
-                customer.getEmail(),
-                customer.getEmailConfirmed()
-        );
+    private RegisterResponse createRegisterResponseByCustomer(CustomerEntity customer) {
+       return new RegisterResponse(
+               customer.getId(),
+               customer.getFirstNames(),
+               customer.getLastNames(),
+               customer.getEmail(),
+               customer.getEmailConfirmed()
+       );
     }
 
 
     public AuthenticationResponse authenticate(AuthenticationRequest request)
             throws UserNotFoundException {
-        // Create manager
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        request.email(),
-                        request.password()
-                )
-        );
+        return userRepository.findByEmailIgnoreCase(request.email())
+                .map(user->{
+                    authenticationManager.authenticate(
+                            new UsernamePasswordAuthenticationToken(
+                                    request.email(),
+                                    request.password()
+                            )
+                    );
 
-        // Find user
-        UserEntity user = userRepository.findByEmailIgnoreCase(request.email())
-                .orElseThrow(UserNotFoundException::new);
+                    String token = jwtService.generateToken(user);
+                    String refreshToken = jwtService.generateRefreshToken(user);
 
-        // Generate JWT
-        String jwtToken = jwtService.generateToken(user);
-        String refreshToken = jwtService.generateRefreshToken(user);
+                    return createAuthResponseByUser(token,refreshToken,user);
+                }).orElseThrow(UserNotFoundException::new);
+    }
 
-        return AuthenticationResponse.builder()
-                .accessToken(jwtToken)
-                .refreshToken(refreshToken)
-                .roles(user.getRoles())
-                .verified(user.getEmailConfirmed().toString())
-                .build();
+    private AuthenticationResponse createAuthResponseByUser(String accessToken
+            ,String refreshToken, UserEntity user) {
+       return AuthenticationResponse.builder()
+               .accessToken(accessToken)
+               .refreshToken(refreshToken)
+               .roles(user.getRoles())
+               .verified(user.getEmailConfirmed().toString())
+               .build();
     }
 
     public void refreshToken(HttpServletResponse response,
@@ -119,15 +133,15 @@ public class AuthenticationService {
             var user = this.userRepository.findByEmail(userEmail);
 
             if(jwtService.validateToken(refreshToken, user)) {
-                var accessToken = jwtService.generateToken(user);
+                String accessToken = jwtService.generateToken(user);
 
-                var authResponse = AuthenticationResponse.builder()
+                AuthenticationResponse authResponse =
+                        AuthenticationResponse.builder()
                         .accessToken(accessToken)
                         .refreshToken(refreshToken)
                         .build();
 
-                new ObjectMapper().writeValue(response.getOutputStream(),
-                        authResponse);
+                objectMapper.writeValue(response.getOutputStream(),authResponse);
             }
         }
     }

@@ -1,5 +1,7 @@
 package com.ferrientregas.customer;
 
+import com.ferrientregas.auth.dto.RegisterRequest;
+import com.ferrientregas.customer.dto.CustomerMapper;
 import com.ferrientregas.customer.dto.CustomerRequest;
 import com.ferrientregas.customer.dto.CustomerResponse;
 import com.ferrientregas.customer.dto.CustomerUpdateRequest;
@@ -14,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.Set;
 import java.util.UUID;
 
@@ -24,108 +27,74 @@ public class CustomerService {
     private final CustomerRepository customerRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
-    /***
-     * List customers with paginate
-     *
-     * @param pageable Pageable
-     * @return response Page<response>
-     */
+    private static final String CUSTOMER_ROLE = "CUSTOMER";
+
     public Page<CustomerResponse> list(Pageable pageable) {
         return this.customerRepository.findAllByDeletedIsFalse(pageable)
-                .map(x -> new CustomerResponse(
-                        x.getId(),
-                        x.getFirstNames(),
-                        x.getLastNames(),
-                        x.getIdentification(),
-                        x.getAddress(),
-                        x.getAddressMaps(),
-                        x.getPhone(),
-                        x.getBirthDate(),
-                        x.getEmail()
-                ));
+                .map(CustomerMapper::toCustomerResponse);
     }
 
-    /***
-     * Get customer
-     *
-     * @param id UUID
-     * @return response
-     * @throws CustomerNotFoundException not found exception
-     */
     public CustomerResponse get(UUID id) throws CustomerNotFoundException {
-        CustomerEntity customer = this.customerRepository.findById(id)
+        return this.customerRepository.findById(id)
+                .map(CustomerMapper::toCustomerResponse)
                 .orElseThrow(CustomerNotFoundException::new);
 
-        return new CustomerResponse(
-                customer.getId(),
-                customer.getFirstNames(),
-                customer.getLastNames(),
-                customer.getIdentification(),
-                customer.getAddress(),
-                customer.getAddressMaps(),
-                customer.getPhone(),
-                customer.getBirthDate(),
-                customer.getEmail()
-        );
     }
 
-    /***
-     * Create customer and user default with aleatory password
-     *
-     * @param request customer
-     * @return response
-     */
     public CustomerResponse create(CustomerRequest request) {
+        RoleEntity role = getOrCreateRole();
+        Set<RoleEntity> roles = Collections.singleton(role);
+        CustomerEntity customer = createAndSaveCustomer(roles,request);
 
-        // Get role CUSTOMER
-        RoleEntity role = roleRepository.findByName("CUSTOMER")
-                .orElseGet(()->roleRepository.save(RoleEntity.builder().name(
-                        "CUSTOMER").build()));
-
-        // Add role to new customer
-        Set<RoleEntity> roles = Set.of(role);
-
-        // Create only customer with user default password
-        CustomerEntity customer = this.customerRepository.save(
-                CustomerEntity.builder()
-                        .firstNames(request.firstNames())
-                        .lastNames(request.lastNames())
-                        .identification(request.identification())
-                        .address(request.address())
-                        .addressMaps(request.addressMaps())
-                        .phone(request.phone())
-                        .birthDate(request.birthDate())
-                        .email(request.email())
-                        .password(passwordEncoder.encode(PasswordGenerator.generatePassword()))
-                        .roles(roles)
-                        .build()
-        );
-
-        return new CustomerResponse(
-                customer.getId(),
-                customer.getFirstNames(),
-                customer.getLastNames(),
-                customer.getIdentification(),
-                customer.getAddress(),
-                customer.getAddressMaps(),
-                customer.getPhone(),
-                customer.getBirthDate(),
-                customer.getEmail()
-        );
+        return CustomerMapper.toCustomerResponse(customer);
     }
 
-    /***
-     * Update customer
-     *
-     * @param request customer
-     * @param id UUID
-     * @return response
-     * @throws CustomerNotFoundException not found exception
-     */
-    public CustomerResponse update(CustomerUpdateRequest request, UUID id) throws CustomerNotFoundException {
-        CustomerEntity customer = this.customerRepository.findById(id)
-                .orElseThrow(CustomerNotFoundException::new);
+    public CustomerResponse update(CustomerUpdateRequest request, UUID id)
+            throws CustomerNotFoundException {
+        CustomerEntity customer = getCustomerById(id);
+        updateCustomerFields(customer,request);
 
+        return CustomerMapper.toCustomerResponse(customer);
+    }
+
+    public Boolean delete(UUID id) throws CustomerNotFoundException {
+        CustomerEntity customer = getCustomerById(id);
+        customer.setDeleted(true);
+        this.customerRepository.save(customer);
+
+        return true;
+    }
+
+
+
+    private CustomerEntity getCustomerById(UUID id)
+            throws CustomerNotFoundException {
+        return this.customerRepository.findById(id)
+                .orElseThrow(CustomerNotFoundException::new);
+    }
+
+    private RoleEntity getOrCreateRole(){
+
+        return this.roleRepository.findByName(CUSTOMER_ROLE)
+                .orElseGet(()->roleRepository.save(RoleEntity.builder()
+                        .name(CUSTOMER_ROLE).build()));
+    }
+
+    private CustomerEntity createAndSaveCustomer(Set<RoleEntity> roles,
+                                                 CustomerRequest customerRequest) {
+
+        return this.customerRepository.save(CustomerEntity.builder()
+                .firstNames(customerRequest.firstNames())
+                .lastNames(customerRequest.lastNames())
+                .email(customerRequest.email())
+                .password(passwordEncoder.encode(
+                        PasswordGenerator.generatePassword()))
+                .roles(roles)
+                .build());
+    }
+
+    private void updateCustomerFields(CustomerEntity customer,
+                                   CustomerUpdateRequest request) {
         if (!StringUtils.isBlank(request.firstNames())) {
             customer.setFirstNames(request.firstNames());
         }
@@ -147,34 +116,6 @@ public class CustomerService {
         if (request.birthDate() != null) {
             customer.setBirthDate(request.birthDate());
         }
-
-        return new CustomerResponse(
-                customer.getId(),
-                customer.getFirstNames(),
-                customer.getLastNames(),
-                customer.getIdentification(),
-                customer.getAddress(),
-                customer.getAddressMaps(),
-                customer.getPhone(),
-                customer.getBirthDate(),
-                customer.getEmail()
-        );
     }
 
-    /***
-     * Delete customer soft delete
-     * @param id UUID
-     * @return true Boolean
-     * @throws CustomerNotFoundException not found exception
-     */
-    public Boolean delete(UUID id) throws CustomerNotFoundException {
-        CustomerEntity customer = this.customerRepository.findById(id)
-                .orElseThrow(CustomerNotFoundException::new);
-
-        customer.setDeleted(true);
-
-        this.customerRepository.save(customer);
-
-        return true;
-    }
 }

@@ -31,14 +31,15 @@ public class PaymentTypeController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ResultResponse<Object, String>> get(@PathVariable UUID id) throws PaymentTypeNotFoundException {
+    public ResponseEntity<ResultResponse<Object, String>> get(
+            @PathVariable UUID id) throws PaymentTypeNotFoundException {
         return ResponseEntity.ok(
-                ResultResponse.success(this.paymentTypeService.get(id), 200)
-        );
+                ResultResponse.success(this.paymentTypeService.get(id), 200));
     }
 
     @PostMapping
-    public ResponseEntity<ResultResponse<Object, String>> create(@Valid @RequestBody PaymentTypeRequest request) {
+    public ResponseEntity<ResultResponse<Object, String>> create(
+            @Valid @RequestBody PaymentTypeRequest request) {
         PaymentTypeResponse response = this.paymentTypeService.create(request);
 
         URI location = ServletUriComponentsBuilder
@@ -48,25 +49,24 @@ public class PaymentTypeController {
                 .toUri();
 
         return ResponseEntity.created(location)
-                .body(
-                        ResultResponse.success(response, 201)
-                );
+                .body(ResultResponse.success(response, 201));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ResultResponse<Object, String>> update(@PathVariable UUID id, @RequestBody PaymentTypeUpdateRequest request) throws PaymentTypeNotFoundException {
+    public ResponseEntity<ResultResponse<Object, String>> update(
+            @PathVariable UUID id,
+            @RequestBody PaymentTypeUpdateRequest request)
+            throws PaymentTypeNotFoundException {
         return ResponseEntity.ok(
-                ResultResponse.success(this.paymentTypeService.update(
-                        id,
-                        request
-                ), 200)
-        );
+                ResultResponse.success(
+                        this.paymentTypeService.update(id, request), 200));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<ResultResponse<Object, String>> delete(@PathVariable UUID id) throws PaymentTypeNotFoundException {
+    public ResponseEntity<ResultResponse<Object, String>> delete(
+            @PathVariable UUID id) throws PaymentTypeNotFoundException {
         return ResponseEntity.ok(
-                ResultResponse.success(this.paymentTypeService.delete(id), 200)
-        );
+                ResultResponse.success(
+                        this.paymentTypeService.delete(id), 200));
     }
 }

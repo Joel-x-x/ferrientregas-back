@@ -1,7 +1,6 @@
-package com.ferrientregas.driver;
+package com.ferrientregas.driver.dto;
 
 import com.ferrientregas.role.RoleEntity;
-import lombok.Builder;
 
 import java.util.Set;
 

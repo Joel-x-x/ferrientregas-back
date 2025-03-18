@@ -11,7 +11,7 @@ public record DeliveryUpdateRequest(
         String numeration,
         String invoiceNumber,
         @NotNull
-        String DeliveryDate,
+        String deliveryDate,
         @NotNull
         LocalTime estimateHourInit,
         @NotNull
