@@ -1,5 +1,8 @@
 package com.ferrientregas.user;
 
+import com.ferrientregas.user.dto.UserResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -12,4 +15,5 @@ public interface UserRepository extends JpaRepository<UserEntity, UUID> {
     UserEntity findUserEntityById(UUID id);
     UserEntity findByEmail(String token);
     UserEntity findByToken(String token);
+    Page<UserResponse> findAllByDeletedFalse(Pageable pageable);
 }
