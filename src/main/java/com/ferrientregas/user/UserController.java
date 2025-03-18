@@ -1,10 +1,7 @@
 package com.ferrientregas.user;
 
 import com.ferrientregas.exception.ResultResponse;
-import com.ferrientregas.user.dto.UserRequest;
-import com.ferrientregas.user.dto.UserResponse;
-import com.ferrientregas.user.dto.VerificationRequest;
-import com.ferrientregas.user.dto.VerificationResponse;
+import com.ferrientregas.user.dto.*;
 import com.ferrientregas.user.exception.UserNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -66,7 +63,7 @@ public class UserController {
     @PutMapping("/{id}")
     public ResponseEntity<ResultResponse<Object,String>> update(
            @PathVariable UUID id,
-           @Valid @RequestBody UserRequest userRequest
+           @Valid @RequestBody UserUpdateRequest userRequest
     ) throws UserNotFoundException {
         return ResponseEntity.ok(ResultResponse.success(
                 this.userService.updateUser(id,userRequest),

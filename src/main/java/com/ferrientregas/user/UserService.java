@@ -1,10 +1,7 @@
 package com.ferrientregas.user;
 
 import com.ferrientregas.role.RoleRepository;
-import com.ferrientregas.user.dto.UserRequest;
-import com.ferrientregas.user.dto.UserResponse;
-import com.ferrientregas.user.dto.VerificationRequest;
-import com.ferrientregas.user.dto.VerificationResponse;
+import com.ferrientregas.user.dto.*;
 import com.ferrientregas.user.exception.UserNotFoundException;
 import io.micrometer.common.util.StringUtils;
 import lombok.RequiredArgsConstructor;
@@ -102,27 +99,27 @@ public class UserService {
        );
    }
 
-   public UserResponse updateUser(UUID id, UserRequest userRequest)
+   public UserResponse updateUser(UUID id, UserUpdateRequest userUpdateRequest)
    throws UserNotFoundException {
       UserEntity user = userRepository.findById(id)
               .orElseThrow(UserNotFoundException::new);
 
       if(!StringUtils.isBlank(user.getFirstNames())){
-          user.setFirstNames(userRequest.firstNames());
+          user.setFirstNames(userUpdateRequest.firstNames());
       }
       if(!StringUtils.isBlank(user.getLastNames())){
-          user.setLastNames(userRequest.lastNames());
+          user.setLastNames(userUpdateRequest.lastNames());
       }
       if(!StringUtils.isBlank(user.getEmail())){
-          user.setEmail(userRequest.email());
+          user.setEmail(userUpdateRequest.email());
       }
       if(!StringUtils.isBlank(user.getPassword())){
-          user.setPassword(userRequest.password());
+          user.setPassword(userUpdateRequest.password());
       }
-      user.setProfileImage(userRequest.profileImage());
-      user.setEmailConfirmed(userRequest.emailConfirmed());
+      user.setProfileImage(userUpdateRequest.profileImage());
+      user.setEmailConfirmed(userUpdateRequest.emailConfirmed());
       user.setRoles(this.roleRepository
-              .findRoleEntityByName(userRequest.role()));
+              .findRoleEntityByName(userUpdateRequest.role()));
 
       userRepository.save(user);
 

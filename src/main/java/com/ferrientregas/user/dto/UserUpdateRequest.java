@@ -3,7 +3,6 @@ package com.ferrientregas.user.dto;
 import java.util.UUID;
 
 public record UserUpdateRequest (
-
         String firstNames,
         String lastNames,
         String email,
