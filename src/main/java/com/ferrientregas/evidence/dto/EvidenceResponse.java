@@ -1,6 +1,9 @@
 package com.ferrientregas.evidence.dto;
 
-public record EvidenceResponse (
+import java.util.UUID;
 
+public record EvidenceResponse (
+        UUID id,
+        String url
 ){
 }
