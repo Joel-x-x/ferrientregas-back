@@ -3,9 +3,12 @@ package com.ferrientregas.delivery;
 import com.ferrientregas.customer.CustomerRepository;
 import com.ferrientregas.delivery.dto.DeliveryRequest;
 import com.ferrientregas.delivery.dto.DeliveryResponse;
+import com.ferrientregas.delivery.dto.DeliveryUpdateRequest;
+import com.ferrientregas.delivery.exception.DeliveryNotFoundException;
 import com.ferrientregas.deliverystatus.DeliveryStatusRepository;
 import com.ferrientregas.paymenttype.PaymentTypeRepository;
 import com.ferrientregas.user.UserRepository;
+import io.micrometer.common.util.StringUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -28,6 +31,7 @@ public class DeliveryService {
         DeliveryEntity delivery = this.deliveryRepository.findById(id)
                 .orElseThrow(DeliveryNotFoundException::new);
         return new DeliveryResponse(
+                delivery.getId(),
                 delivery.getNumeration(),
                 delivery.getInvoiceNumber(),
                 delivery.getDeliveryDate(),
@@ -51,6 +55,7 @@ public class DeliveryService {
         return this.deliveryRepository.findAllByDeletedFalse(pageable)
                 .map(
                         delivery-> new DeliveryResponse(
+                                delivery.getId(),
                                 delivery.getNumeration(),
                                 delivery.getInvoiceNumber(),
                                 delivery.getDeliveryDate(),
@@ -106,6 +111,7 @@ public class DeliveryService {
                        .build()
                );
        return new DeliveryResponse(
+               delivery.getId(),
                delivery.getNumeration(),
                delivery.getInvoiceNumber(),
                delivery.getDeliveryDate(),
@@ -124,7 +130,69 @@ public class DeliveryService {
        );
    }
 
+    public DeliveryResponse updateDelivery(UUID id,
+                                           DeliveryUpdateRequest deliveryRequest)
+    throws DeliveryNotFoundException {
+       DeliveryEntity delivery = deliveryRepository.findById(id)
+               .orElseThrow(DeliveryNotFoundException::new);
 
+       if(!StringUtils.isBlank(delivery.getNumeration())) {
+          delivery.setNumeration(deliveryRequest.numeration());
+       }
+       if(!StringUtils.isBlank(delivery.getInvoiceNumber())) {
+           delivery.setInvoiceNumber(deliveryRequest.invoiceNumber());
+       }
+       if(!StringUtils.isBlank(delivery.getDeliveryDate())) {
+           delivery.setDeliveryDate(deliveryRequest.DeliveryDate());
+       }
+       delivery.setEstimateHourInit(now());
+       delivery.setEstimateHourEnd(now());
+       delivery.setDeliveryStatus(
+               this.deliveryStatusRepository.findByName(
+                       deliveryRequest.deliveryStatusName()
+               )
+       );
+       delivery.setPaymentType(
+               this.paymentTypeRepository.findByName(
+                       deliveryRequest.paymentType()
+               )
+       );
+       delivery.setCredit(deliveryRequest.credit());
+       delivery.setTotal(deliveryRequest.total());
+       delivery.setEvidence(deliveryRequest.evidence());
+       delivery.setUser(
+               this.userRepository.findUserEntityById(
+                       deliveryRequest.user()
+               )
+       );
+       delivery.setCustomer(
+               this.customerRepository.findCustomerEntityById(
+                       deliveryRequest.customer()
+               )
+       );
+       delivery.setDeliveryData(deliveryRequest.deliveryData());
+       delivery.setObservations(deliveryRequest.observations());
+       delivery.setComments(deliveryRequest.comments());
+
+        return new DeliveryResponse(
+                delivery.getId(),
+                delivery.getNumeration(),
+                delivery.getInvoiceNumber(),
+                delivery.getDeliveryDate(),
+                delivery.getEstimateHourInit(),
+                delivery.getEstimateHourEnd(),
+                delivery.getDeliveryStatus(),
+                delivery.getPaymentType(),
+                delivery.getCredit(),
+                delivery.getTotal(),
+                delivery.getEvidence(),
+                delivery.getUser(),
+                delivery.getCustomer(),
+                delivery.getDeliveryData(),
+                delivery.getObservations(),
+                delivery.getComments()
+        );
+    }
 
    public Boolean deleteDelivery(UUID id) throws DeliveryNotFoundException {
       DeliveryEntity delivery = this.deliveryRepository.findById(id)

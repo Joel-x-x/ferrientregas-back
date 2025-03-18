@@ -1,32 +1,25 @@
 package com.ferrientregas.delivery.dto;
 
-import com.ferrientregas.customer.CustomerEntity;
-import com.ferrientregas.deliverystatus.DeliveryStatusEntity;
 import com.ferrientregas.evidence.EvidenceEntity;
-import com.ferrientregas.paymenttype.PaymentTypeEntity;
-import com.ferrientregas.user.UserEntity;
 import jakarta.validation.constraints.NotNull;
-import lombok.Builder;
 
 import java.time.LocalTime;
 import java.util.List;
 import java.util.UUID;
 
-@Builder
-public record DeliveryResponse (
-        UUID id,
+public record DeliveryUpdateRequest(
         String numeration,
         String invoiceNumber,
         @NotNull
-        String deliveryDate,
+        String DeliveryDate,
         @NotNull
         LocalTime estimateHourInit,
         @NotNull
         LocalTime estimateHourEnd,
         @NotNull
-        DeliveryStatusEntity deliveryStatusName,
+        String deliveryStatusName,
         @NotNull
-        PaymentTypeEntity paymentType,
+        String paymentType,
         @NotNull
         Double credit,
         @NotNull
@@ -34,11 +27,11 @@ public record DeliveryResponse (
         @NotNull
         List<EvidenceEntity> evidence,
         @NotNull
-        UserEntity user,
+        UUID user,
         @NotNull
-        CustomerEntity customer,
+        UUID customer,
         String deliveryData,
         String observations,
         String comments
-){
+) {
 }
