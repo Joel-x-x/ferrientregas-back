@@ -3,11 +3,6 @@ package com.ferrientregas.paymenttype;
 import com.ferrientregas.audit.Auditable;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
-
-import java.util.Random;
-import java.util.UUID;
 
 import static java.time.LocalDateTime.now;
 

@@ -1,7 +1,5 @@
 package com.ferrientregas.user;
 
-import com.ferrientregas.user.dto.UserResponse;
-import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

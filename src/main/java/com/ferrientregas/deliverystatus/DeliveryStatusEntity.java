@@ -5,8 +5,6 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
-import java.util.Random;
-
 import static java.time.LocalDateTime.now;
 
 @EqualsAndHashCode(callSuper = true)

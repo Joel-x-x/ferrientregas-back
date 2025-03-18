@@ -5,8 +5,6 @@ import com.ferrientregas.deliverystatus.dto.DeliveryStatusRequest;
 import com.ferrientregas.deliverystatus.dto.DeliveryStatusResponse;
 import com.ferrientregas.deliverystatus.dto.DeliveryStatusUpdateRequest;
 import com.ferrientregas.deliverystatus.exception.DeliveryStatusNotFoundException;
-import com.ferrientregas.paymenttype.dto.PaymentTypeRequest;
-import com.ferrientregas.paymenttype.dto.PaymentTypeResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

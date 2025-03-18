@@ -1,7 +1,6 @@
 package com.ferrientregas.evidence;
 
 import com.ferrientregas.evidence.dto.EvidenceResponse;
-import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

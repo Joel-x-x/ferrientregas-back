@@ -1,26 +1,18 @@
 package com.ferrientregas.identificationtype;
 
+import com.ferrientregas.audit.Auditable;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
+import lombok.experimental.SuperBuilder;
 
-import java.util.UUID;
-
-@Getter
-@Setter
+@EqualsAndHashCode(callSuper = true)
+@Data
 @ToString
-@Builder
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
 @Table(name = "identification_types")
-public class IdentificationTypeEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(unique = true, updatable = false, nullable = false,
-            columnDefinition = "CHAR(36)")
-    @JdbcTypeCode(SqlTypes.CHAR)
-    private UUID id;
+public class IdentificationTypeEntity extends Auditable {
     private String typeName;
 }

@@ -1,6 +1,5 @@
 package com.ferrientregas.customer;
 
-import com.ferrientregas.auth.dto.RegisterRequest;
 import com.ferrientregas.customer.dto.CustomerMapper;
 import com.ferrientregas.customer.dto.CustomerRequest;
 import com.ferrientregas.customer.dto.CustomerResponse;
