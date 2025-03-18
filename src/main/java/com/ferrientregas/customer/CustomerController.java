@@ -6,6 +6,7 @@ import com.ferrientregas.customer.dto.CustomerUpdateRequest;
 import com.ferrientregas.customer.exception.CustomerNotFoundException;
 import com.ferrientregas.exception.ResultResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -23,7 +24,7 @@ public class CustomerController {
     private final CustomerService customerService;
 
     @GetMapping
-    public ResponseEntity<ResultResponse<Object, String>> getAll(
+    public ResponseEntity<ResultResponse<Page<CustomerResponse>, String>> getAll(
             Pageable pageable) {
         return ResponseEntity.ok(
                 ResultResponse.success(
@@ -33,7 +34,7 @@ public class CustomerController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ResultResponse<Object, String>> get(
+    public ResponseEntity<ResultResponse<CustomerResponse, String>> get(
             @PathVariable UUID id) throws CustomerNotFoundException {
         return ResponseEntity.ok(
                 ResultResponse.success(this.customerService.get(id), 200)
@@ -41,7 +42,7 @@ public class CustomerController {
     }
 
     @PostMapping
-    public ResponseEntity<ResultResponse<Object, String>> create(
+    public ResponseEntity<ResultResponse<CustomerResponse, String>> create(
             @Validated @RequestBody CustomerRequest request) {
         CustomerResponse response = this.customerService.create(request);
         URI location = ServletUriComponentsBuilder
@@ -55,7 +56,7 @@ public class CustomerController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ResultResponse<Object, String>> update(
+    public ResponseEntity<ResultResponse<CustomerResponse, String>> update(
             @RequestBody
             CustomerUpdateRequest request,
             @PathVariable UUID id) throws CustomerNotFoundException {
@@ -65,7 +66,7 @@ public class CustomerController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<ResultResponse<Object, String>> delete(
+    public ResponseEntity<ResultResponse<Boolean, String>> delete(
             @PathVariable UUID id) throws CustomerNotFoundException {
         return ResponseEntity.ok(
                 ResultResponse.success(
