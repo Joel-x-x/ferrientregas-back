@@ -2,11 +2,10 @@ package com.ferrientregas.auth;
 
 import com.ferrientregas.exception.ResultResponse;
 import com.ferrientregas.role.RoleNotFoundException;
-import com.ferrientregas.user.UserNotFoundException;
+import com.ferrientregas.user.exception.UserNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

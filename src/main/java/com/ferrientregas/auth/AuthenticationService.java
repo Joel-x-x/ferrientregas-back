@@ -8,7 +8,7 @@ import com.ferrientregas.role.RoleEntity;
 import com.ferrientregas.role.RoleNotFoundException;
 import com.ferrientregas.role.RoleRepository;
 import com.ferrientregas.user.UserEntity;
-import com.ferrientregas.user.UserNotFoundException;
+import com.ferrientregas.user.exception.UserNotFoundException;
 import com.ferrientregas.user.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

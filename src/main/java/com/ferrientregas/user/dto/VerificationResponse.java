@@ -1,4 +1,4 @@
-package com.ferrientregas.user;
+package com.ferrientregas.user.dto;
 
 import lombok.Builder;
 

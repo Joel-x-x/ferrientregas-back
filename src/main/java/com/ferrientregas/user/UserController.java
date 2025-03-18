@@ -1,5 +1,7 @@
 package com.ferrientregas.user;
 
+import com.ferrientregas.user.dto.VerificationRequest;
+import com.ferrientregas.user.dto.VerificationResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;

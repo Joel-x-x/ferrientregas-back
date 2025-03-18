@@ -1,4 +1,4 @@
-package com.ferrientregas.user;
+package com.ferrientregas.user.exception;
 
 public class UserNotFoundException extends Exception {
     public UserNotFoundException() {
