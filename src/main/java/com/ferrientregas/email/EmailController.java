@@ -1,5 +1,7 @@
 package com.ferrientregas.email;
 
+import com.ferrientregas.email.dto.EmailRequest;
+import com.ferrientregas.email.dto.EmailResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;

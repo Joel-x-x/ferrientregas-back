@@ -1,4 +1,4 @@
-package com.ferrientregas.email;
+package com.ferrientregas.email.dto;
 
 import lombok.Builder;
 

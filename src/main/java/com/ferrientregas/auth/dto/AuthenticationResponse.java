@@ -1,4 +1,4 @@
-package com.ferrientregas.auth;
+package com.ferrientregas.auth.dto;
 
 import com.ferrientregas.role.RoleEntity;
 import lombok.Builder;

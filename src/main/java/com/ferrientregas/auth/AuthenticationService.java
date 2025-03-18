@@ -1,6 +1,10 @@
 package com.ferrientregas.auth;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ferrientregas.auth.dto.AuthenticationRequest;
+import com.ferrientregas.auth.dto.AuthenticationResponse;
+import com.ferrientregas.auth.dto.RegisterRequest;
+import com.ferrientregas.auth.dto.RegisterResponse;
 import com.ferrientregas.config.JwtService;
 import com.ferrientregas.customer.CustomerEntity;
 import com.ferrientregas.customer.CustomerRepository;

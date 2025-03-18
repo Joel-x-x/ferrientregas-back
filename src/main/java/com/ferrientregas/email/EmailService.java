@@ -1,5 +1,7 @@
 package com.ferrientregas.email;
 
+import com.ferrientregas.email.dto.EmailRequest;
+import com.ferrientregas.email.dto.EmailResponse;
 import com.ferrientregas.user.UserEntity;
 import com.ferrientregas.user.UserRepository;
 import lombok.RequiredArgsConstructor;
