@@ -42,6 +42,7 @@ public class UserService {
    {
       UserEntity user = getUserEntityById(id);
       updateUserFields(user, userUpdateRequest);
+      this.userRepository.save(user);
 
       return UserMapper.toUserResponse(user);
    }
