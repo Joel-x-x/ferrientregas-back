@@ -4,8 +4,8 @@ import com.ferrientregas.paymenttype.dto.PaymentTypeMapper;
 import com.ferrientregas.paymenttype.dto.PaymentTypeRequest;
 import com.ferrientregas.paymenttype.dto.PaymentTypeResponse;
 import com.ferrientregas.paymenttype.dto.PaymentTypeUpdateRequest;
-import com.ferrientregas.paymenttype.exception.PaymentTypeNotFoundException;
 import io.micrometer.common.util.StringUtils;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -23,10 +23,12 @@ public class PaymentTypeService {
                 .map(PaymentTypeMapper::toPaymentTypeResponse).toList();
     }
 
-    public PaymentTypeResponse get(UUID id) throws PaymentTypeNotFoundException{
+    public PaymentTypeResponse get(UUID id){
         return paymentTypeRepository.findById(id)
                 .map(PaymentTypeMapper::toPaymentTypeResponse)
-                .orElseThrow(PaymentTypeNotFoundException::new);
+                .orElseThrow(()->
+                        new EntityNotFoundException("PaymentType with id " + id
+                                + " not found"));
     }
 
     public PaymentTypeResponse create(PaymentTypeRequest request) {
@@ -34,10 +36,8 @@ public class PaymentTypeService {
         return PaymentTypeMapper.toPaymentTypeResponse(paymentType);
     }
 
-    public PaymentTypeResponse update(UUID id, PaymentTypeUpdateRequest request)
-            throws PaymentTypeNotFoundException {
-        PaymentTypeEntity paymentType = paymentTypeRepository.findById(id)
-                .orElseThrow(PaymentTypeNotFoundException::new);
+    public PaymentTypeResponse update(UUID id, PaymentTypeUpdateRequest request){
+        PaymentTypeEntity paymentType = getPaymentTypeById(id);
 
         if(!StringUtils.isBlank(request.name()))
             paymentType.setName(request.name());
@@ -46,9 +46,8 @@ public class PaymentTypeService {
         return PaymentTypeMapper.toPaymentTypeResponse(paymentType);
     }
 
-    public Boolean delete(UUID id) throws PaymentTypeNotFoundException {
-        PaymentTypeEntity paymentType = paymentTypeRepository.findById(id)
-                .orElseThrow(PaymentTypeNotFoundException::new);
+    public Boolean delete(UUID id){
+        PaymentTypeEntity paymentType = getPaymentTypeById(id);
 
         paymentType.setDeleted(true);
         this.paymentTypeRepository.save(paymentType);
@@ -56,6 +55,12 @@ public class PaymentTypeService {
         return true;
     }
 
+    private PaymentTypeEntity getPaymentTypeById(UUID id){
+       return this.paymentTypeRepository.findById(id)
+               .orElseThrow(()->
+                       new EntityNotFoundException("PaymentType with id " + id
+                               + " not found"));
+    }
 
     private PaymentTypeEntity createAndSavePaymentType(
             PaymentTypeRequest paymentTypeRequest){

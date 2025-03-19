@@ -4,7 +4,6 @@ import com.ferrientregas.exception.ResultResponse;
 import com.ferrientregas.paymenttype.dto.PaymentTypeRequest;
 import com.ferrientregas.paymenttype.dto.PaymentTypeResponse;
 import com.ferrientregas.paymenttype.dto.PaymentTypeUpdateRequest;
-import com.ferrientregas.paymenttype.exception.PaymentTypeNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -32,7 +31,7 @@ public class PaymentTypeController {
 
     @GetMapping("/{id}")
     public ResponseEntity<ResultResponse<Object, String>> get(
-            @PathVariable UUID id) throws PaymentTypeNotFoundException {
+            @PathVariable UUID id){
         return ResponseEntity.ok(
                 ResultResponse.success(this.paymentTypeService.get(id), 200));
     }
@@ -55,8 +54,7 @@ public class PaymentTypeController {
     @PutMapping("/{id}")
     public ResponseEntity<ResultResponse<Object, String>> update(
             @PathVariable UUID id,
-            @RequestBody PaymentTypeUpdateRequest request)
-            throws PaymentTypeNotFoundException {
+            @RequestBody PaymentTypeUpdateRequest request){
         return ResponseEntity.ok(
                 ResultResponse.success(
                         this.paymentTypeService.update(id, request), 200));
@@ -64,7 +62,7 @@ public class PaymentTypeController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<ResultResponse<Object, String>> delete(
-            @PathVariable UUID id) throws PaymentTypeNotFoundException {
+            @PathVariable UUID id){
         return ResponseEntity.ok(
                 ResultResponse.success(
                         this.paymentTypeService.delete(id), 200));

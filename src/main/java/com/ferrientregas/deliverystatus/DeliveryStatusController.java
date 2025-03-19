@@ -32,17 +32,18 @@ public class DeliveryStatusController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ResultResponse<Object, String>> get(@PathVariable UUID id) throws DeliveryStatusNotFoundException {
+    public ResponseEntity<ResultResponse<Object, String>> get(
+            @PathVariable UUID id){
         return ResponseEntity.ok(
                 ResultResponse.success(
-                        this.deliveryStatusService.get(id),
-                        200
+                        this.deliveryStatusService.get(id), 200
                 )
         );
     }
 
     @PostMapping
-    public ResponseEntity<ResultResponse<Object, String>> create(@Valid @RequestBody DeliveryStatusRequest request) {
+    public ResponseEntity<ResultResponse<Object, String>> create(
+            @Valid @RequestBody DeliveryStatusRequest request) {
         DeliveryStatusResponse response = this.deliveryStatusService
                 .create(request);
 
@@ -62,7 +63,7 @@ public class DeliveryStatusController {
     public ResponseEntity<ResultResponse<Object, String>> update(
             @Valid @RequestBody DeliveryStatusUpdateRequest request,
             @PathVariable UUID id
-    ) throws DeliveryStatusNotFoundException {
+    ){
         return ResponseEntity.ok(
                 ResultResponse.success(
                         this.deliveryStatusService.update(

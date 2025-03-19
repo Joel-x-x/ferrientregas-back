@@ -3,7 +3,6 @@ package com.ferrientregas.evidence;
 import com.ferrientregas.evidence.dto.EvidenceRequest;
 import com.ferrientregas.evidence.dto.EvidenceResponse;
 import com.ferrientregas.evidence.dto.EvidenceUpdateRequest;
-import com.ferrientregas.evidence.exception.EvidenceNotFoundException;
 import com.ferrientregas.exception.ResultResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -33,9 +32,9 @@ public class EvidenceController {
     @GetMapping("/{id}")
     public ResponseEntity<ResultResponse<Object,String>> getEvidence(
             @PathVariable UUID id
-    ) throws EvidenceNotFoundException {
+    ){
        return ResponseEntity.ok(ResultResponse.success(
-               this.evidenceService.getEvidenceById(id), 200));
+               this.evidenceService.getEvidence(id), 200));
     }
 
     @PostMapping
@@ -58,7 +57,7 @@ public class EvidenceController {
     public ResponseEntity<ResultResponse<Object,String>> updateEvidence(
             @PathVariable UUID id,
             @Validated @RequestBody EvidenceUpdateRequest request
-    ) throws EvidenceNotFoundException {
+    ){
        return ResponseEntity.ok(ResultResponse.success(
                this.evidenceService.updateEvidence(id,request),200));
     }
@@ -66,7 +65,7 @@ public class EvidenceController {
     @DeleteMapping("/{id}")
     public ResponseEntity<ResultResponse<Object,String>> deleteEvidence(
             @PathVariable UUID id
-    ) throws EvidenceNotFoundException {
+    ){
         return ResponseEntity.ok(ResultResponse.success(
                 this.evidenceService.deleteEvidence(id), 200));
     }

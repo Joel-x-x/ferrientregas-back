@@ -40,11 +40,8 @@ public class AuthenticationService {
     private static final String CUSTOMER_ROLE = "CUSTOMER";
 
     public RegisterResponse register(RegisterRequest request) {
-        //Generate Role
         RoleEntity role = getOrCreateRole();
-        // Add role to new customer
         Set<RoleEntity> roles = Collections.singleton(role);
-        // Create customer
         CustomerEntity customer = createAndSaveCustomer(roles,request);
         return createRegisterResponseByCustomer(customer);
     }

@@ -3,7 +3,6 @@ package com.ferrientregas.delivery;
 import com.ferrientregas.delivery.dto.DeliveryRequest;
 import com.ferrientregas.delivery.dto.DeliveryResponse;
 import com.ferrientregas.delivery.dto.DeliveryUpdateRequest;
-import com.ferrientregas.delivery.exception.DeliveryNotFoundException;
 import com.ferrientregas.exception.ResultResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +29,7 @@ public class DeliveryController {
 
     @GetMapping("{id}")
     public ResponseEntity<ResultResponse<Object,String>> findById(
-            @PathVariable UUID id) throws DeliveryNotFoundException {
+            @PathVariable UUID id) {
        return ResponseEntity.ok(ResultResponse.success(
                this.deliveryService.getDelivery(id),200
        ));
@@ -40,7 +39,7 @@ public class DeliveryController {
     public ResponseEntity<ResultResponse<Object, String>> update(
             @PathVariable UUID id,
             @RequestBody DeliveryUpdateRequest deliveryUpdateRequest
-    ) throws DeliveryNotFoundException {
+    ){
         return ResponseEntity.ok(ResultResponse.success(
                 this.deliveryService.updateDelivery(id,deliveryUpdateRequest),
                 200
@@ -67,7 +66,7 @@ public class DeliveryController {
     @DeleteMapping("{id}")
     public ResponseEntity<ResultResponse<Object,String>> delete(
             @PathVariable UUID id
-    ) throws DeliveryNotFoundException {
+    ){
        return ResponseEntity.ok(ResultResponse.success(
                this.deliveryService.deleteDelivery(id), 200
        ));

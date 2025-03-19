@@ -9,6 +9,7 @@ import com.ferrientregas.customer.utils.PasswordGenerator;
 import com.ferrientregas.role.RoleEntity;
 import com.ferrientregas.role.RoleRepository;
 import io.micrometer.common.util.StringUtils;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -33,10 +34,11 @@ public class CustomerService {
                 .map(CustomerMapper::toCustomerResponse);
     }
 
-    public CustomerResponse get(UUID id) throws CustomerNotFoundException {
+    public CustomerResponse get(UUID id){
         return this.customerRepository.findById(id)
                 .map(CustomerMapper::toCustomerResponse)
-                .orElseThrow(CustomerNotFoundException::new);
+                .orElseThrow(()->
+                        new EntityNotFoundException("Customer not found"));
 
     }
 
@@ -48,15 +50,14 @@ public class CustomerService {
         return CustomerMapper.toCustomerResponse(customer);
     }
 
-    public CustomerResponse update(CustomerUpdateRequest request, UUID id)
-            throws CustomerNotFoundException {
+    public CustomerResponse update(CustomerUpdateRequest request, UUID id) {
         CustomerEntity customer = getCustomerById(id);
         updateCustomerFields(customer,request);
 
         return CustomerMapper.toCustomerResponse(customer);
     }
 
-    public Boolean delete(UUID id) throws CustomerNotFoundException {
+    public Boolean delete(UUID id) {
         CustomerEntity customer = getCustomerById(id);
         customer.setDeleted(true);
         this.customerRepository.save(customer);
@@ -66,10 +67,10 @@ public class CustomerService {
 
 
 
-    private CustomerEntity getCustomerById(UUID id)
-            throws CustomerNotFoundException {
+    private CustomerEntity getCustomerById(UUID id) {
         return this.customerRepository.findById(id)
-                .orElseThrow(CustomerNotFoundException::new);
+                .orElseThrow(()->
+                        new EntityNotFoundException("Customer not found"));
     }
 
     private RoleEntity getOrCreateRole(){

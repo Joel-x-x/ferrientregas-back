@@ -3,7 +3,6 @@ package com.ferrientregas.auth;
 import com.ferrientregas.auth.dto.AuthenticationRequest;
 import com.ferrientregas.auth.dto.RegisterRequest;
 import com.ferrientregas.exception.ResultResponse;
-import com.ferrientregas.role.RoleNotFoundException;
 import com.ferrientregas.user.exception.UserNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -23,7 +22,7 @@ public class AuthenticationController {
     @PostMapping("/register")
     public ResponseEntity<ResultResponse<Object,String>> register(
             @RequestBody RegisterRequest request
-    ) throws RoleNotFoundException {
+    ){
         return ResponseEntity.ok(ResultResponse.success(
                 this.authenticationService.register(request), 201)
         );

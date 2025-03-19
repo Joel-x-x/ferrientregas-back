@@ -28,7 +28,7 @@ public class UserController {
 
     @GetMapping("/{id}")
     public ResponseEntity<ResultResponse<Object,String>> findById(
-            @PathVariable UUID id) throws UserNotFoundException {
+            @PathVariable UUID id){
        return ResponseEntity.ok(ResultResponse.success(
                this.userService.getUser(id),200
        ));
@@ -54,7 +54,7 @@ public class UserController {
     @PostMapping("/email-verification")
     public ResponseEntity<ResultResponse<Object,String>> verifyEmailToken(
             @RequestBody VerificationRequest request
-    ) throws UserNotFoundException {
+    ){
         return ResponseEntity.ok(ResultResponse.success(
                 this.userService.verifyEmailToken(request),200));
     }
@@ -63,7 +63,7 @@ public class UserController {
     public ResponseEntity<ResultResponse<Object,String>> update(
            @PathVariable UUID id,
            @Valid @RequestBody UserUpdateRequest userRequest
-    ) throws UserNotFoundException {
+    ){
         return ResponseEntity.ok(ResultResponse.success(
                 this.userService.updateUser(id,userRequest),
                 200
@@ -73,7 +73,7 @@ public class UserController {
     @DeleteMapping("/{id}")
     public ResponseEntity<ResultResponse<Object,String>> delete(
             @PathVariable UUID id
-    ) throws UserNotFoundException {
+    ){
        return ResponseEntity.ok(ResultResponse.success(
                this.userService.deleteUser(id),200
        ));

@@ -14,76 +14,75 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 
 @RestControllerAdvice
 public class ErrorHandler {
 
     @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<ResultResponse<Object,String>> error404Handler(
+    public ResponseEntity<ResultResponse<Object,String>> handleNotFound(
             EntityNotFoundException exc){
-       ResultResponse<Object,String> response = ResultResponse.failure(
-               Collections.singletonList(exc.getMessage()),
-               HttpStatus.NOT_FOUND.value()
-       );
-       return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+        return buildErrorResponse(exc.getMessage(), HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ResultResponse<Object,ValidationErrorData>> error400Handler(
+    public ResponseEntity<ResultResponse<Object,ValidationErrorData>> handleValidationError(
             MethodArgumentNotValidException exc){
-        List<FieldError> errors = exc.getFieldErrors();
         List<ValidationErrorData> messages = new ArrayList<>();
 
-        errors.forEach(error->{
-            messages.add(new ValidationErrorData(error.getField(),
-                    Collections.singletonList(error.getDefaultMessage())));
-        });
-
-        ResultResponse<Object, ValidationErrorData> response =
-                ResultResponse.failure(messages, HttpStatus.BAD_REQUEST.value());
-        return ResponseEntity.badRequest().body(response);
+        for(FieldError fieldError : exc.getFieldErrors()){
+            messages.add(new ValidationErrorData(
+                    fieldError.getField(),
+                    Collections.singletonList(fieldError.getDefaultMessage())
+            ));
+        }
+        return buildValidationResponse(messages);
     }
 
+
     @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<ResultResponse<Object,ValidationErrorData>> validationErrorHandler(
+    public ResponseEntity<ResultResponse<Object,ValidationErrorData>> handleConstraintViolation(
             ConstraintViolationException exc
     ){
-        Set<ConstraintViolation<?>> violations = exc.getConstraintViolations();
         List<ValidationErrorData> messages = new ArrayList<>();
-
-        violations.forEach(violation->{
-            messages.add(new ValidationErrorData(violation.getPropertyPath().toString(),
-                    Collections.singletonList(violation.getMessage()))
-            );
-        });
-
-        ResultResponse<Object, ValidationErrorData> response = ResultResponse.failure(
-                messages, HttpStatus.BAD_REQUEST.value()
-        );
-        return ResponseEntity.badRequest().body(response);
+        for(ConstraintViolation<?> violation : exc.getConstraintViolations()){
+            messages.add(new ValidationErrorData(
+                    violation.getPropertyPath().toString(),
+                    Collections.singletonList(violation.getMessage())
+            ));
+        }
+        return buildValidationResponse(messages);
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ResultResponse<Object,String>> error500Handler(Exception exc){
-        ResultResponse<Object,String> response = ResultResponse.failure(
-                Collections.singletonList("Error interno del servidor: "+
-                        exc.getLocalizedMessage()),
-                HttpStatus.INTERNAL_SERVER_ERROR.value()
-        );
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+    public ResponseEntity<ResultResponse<Object,String>> handleGeneralException(
+            Exception exc
+    ){
+        return buildErrorResponse("Internal server error:" + exc.getMessage(),
+                HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(JpaSystemException.class)
-    public ResponseEntity<ResultResponse<Object,String>> error500Handler(
+    public ResponseEntity<ResultResponse<Object,String>> handleJpaSystemException(
             JpaSystemException exc
     ){
-       ResultResponse<Object,String> response = ResultResponse.failure(
-               Collections.singletonList("Error en el sistema: "+
-                       exc.getLocalizedMessage()),
-               HttpStatus.INTERNAL_SERVER_ERROR.value()
-       );
-      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        return buildErrorResponse("System error: " + exc.getMessage(),
+                HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+    private ResponseEntity<ResultResponse<Object,String>> buildErrorResponse(
+            String message, HttpStatus status
+    ){
+        ResultResponse<Object,String> response = ResultResponse.failure(
+                Collections.singletonList(message),
+                status.value()
+        );
+        return ResponseEntity.status(status).body(response);
+    }
+
+    private ResponseEntity<ResultResponse<Object, ValidationErrorData>> buildValidationResponse(
+            List<ValidationErrorData> messages) {
+        ResultResponse<Object,ValidationErrorData> response =
+                ResultResponse.failure(messages, HttpStatus.BAD_REQUEST.value());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
 }

@@ -4,8 +4,8 @@ import com.ferrientregas.evidence.dto.EvidenceMapper;
 import com.ferrientregas.evidence.dto.EvidenceRequest;
 import com.ferrientregas.evidence.dto.EvidenceResponse;
 import com.ferrientregas.evidence.dto.EvidenceUpdateRequest;
-import com.ferrientregas.evidence.exception.EvidenceNotFoundException;
 import io.micrometer.common.util.StringUtils;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,11 +19,13 @@ public class EvidenceService {
 
     private final EvidenceRepository evidenceRepository;
 
-    public EvidenceResponse getEvidenceById(UUID id)
-            throws EvidenceNotFoundException {
+    public EvidenceResponse getEvidence(UUID id)
+             {
         return this.evidenceRepository.findById(id)
                 .map(EvidenceMapper::toEvidenceResponse)
-                .orElseThrow(EvidenceNotFoundException::new);
+                .orElseThrow(()->
+                        new EntityNotFoundException("Evidence with id "
+                                + id + " not found"));
     }
 
     public Page<EvidenceResponse> getEvidences(Pageable pageable) {
@@ -38,9 +40,8 @@ public class EvidenceService {
 
     public EvidenceResponse updateEvidence(
                     UUID id, EvidenceUpdateRequest evidenceUpdateRequest
-    ) throws EvidenceNotFoundException {
-       EvidenceEntity evidence = evidenceRepository.findById(id)
-               .orElseThrow(EvidenceNotFoundException::new);
+    ){
+       EvidenceEntity evidence = getEvidenceById(id);
        if(!StringUtils.isBlank(evidence.getUrl())) {
           evidence.setUrl(evidenceUpdateRequest.url());
        }
@@ -49,12 +50,18 @@ public class EvidenceService {
        return EvidenceMapper.toEvidenceResponse(evidence);
     }
 
-    public Boolean deleteEvidence(UUID id) throws EvidenceNotFoundException {
-       EvidenceEntity evidence = evidenceRepository.findById(id)
-               .orElseThrow(EvidenceNotFoundException::new);
+    public Boolean deleteEvidence(UUID id) {
+       EvidenceEntity evidence = getEvidenceById(id);
        evidence.setDeleted(true);
        evidenceRepository.save(evidence);
        return true;
+    }
+
+    private EvidenceEntity getEvidenceById(UUID id){
+       return this.evidenceRepository.findById(id)
+               .orElseThrow(()->
+                       new EntityNotFoundException("Evidence with id "
+                               + id + " not found"));
     }
 
 

@@ -4,6 +4,7 @@ import com.ferrientregas.role.RoleRepository;
 import com.ferrientregas.user.dto.*;
 import com.ferrientregas.user.exception.UserNotFoundException;
 import io.micrometer.common.util.StringUtils;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,10 +19,12 @@ public class UserService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
 
-   public UserResponse getUser(UUID id) throws UserNotFoundException {
+   public UserResponse getUser(UUID id){
         return this.userRepository.findById(id)
                 .map(UserMapper::toUserResponse)
-                .orElseThrow(UserNotFoundException::new);
+                .orElseThrow(()->
+                        new EntityNotFoundException("User with id " + id +
+                                " not found"));
 
    }
 
@@ -36,34 +39,38 @@ public class UserService {
    }
 
    public UserResponse updateUser(UUID id, UserUpdateRequest userUpdateRequest)
-   throws UserNotFoundException {
-      UserEntity user = userRepository.findById(id)
-              .orElseThrow(UserNotFoundException::new);
+   {
+      UserEntity user = getUserEntityById(id);
       updateUserFields(user, userUpdateRequest);
 
       return UserMapper.toUserResponse(user);
    }
 
-   public Boolean deleteUser(UUID id) throws UserNotFoundException {
-       UserEntity user = userRepository.findById(id)
-               .orElseThrow(UserNotFoundException::new);
+   public Boolean deleteUser(UUID id){
+       UserEntity user = getUserEntityById(id);
 
        user.setDeleted(true);
        userRepository.save(user);
        return true;
    }
 
-    public VerificationResponse verifyEmailToken(VerificationRequest request)
-            throws UserNotFoundException {
+    public VerificationResponse verifyEmailToken(VerificationRequest request) {
         UserEntity user = userRepository.findByToken(request.token())
-                .orElseThrow(UserNotFoundException::new);
+                .orElseThrow(()->
+                        new EntityNotFoundException("User with token " +
+                                request.token() + " not found"));
 
         user.setEmailConfirmed(true);
         userRepository.save(user);
         return UserMapper.toVerificationResponse();
     }
 
-
+    private UserEntity getUserEntityById(UUID id){
+      return this.userRepository.findById(id)
+              .orElseThrow(()->
+                      new EntityNotFoundException("User with id " + id +
+                              " not found"));
+    }
 
     private void updateUserFields(UserEntity user, UserUpdateRequest userUpdateRequest){
         if(!StringUtils.isBlank(userUpdateRequest.firstNames())){

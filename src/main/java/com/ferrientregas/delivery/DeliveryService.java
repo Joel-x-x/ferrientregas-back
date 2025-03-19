@@ -5,11 +5,11 @@ import com.ferrientregas.delivery.dto.DeliveryMapper;
 import com.ferrientregas.delivery.dto.DeliveryRequest;
 import com.ferrientregas.delivery.dto.DeliveryResponse;
 import com.ferrientregas.delivery.dto.DeliveryUpdateRequest;
-import com.ferrientregas.delivery.exception.DeliveryNotFoundException;
 import com.ferrientregas.deliverystatus.DeliveryStatusRepository;
 import com.ferrientregas.paymenttype.PaymentTypeRepository;
 import com.ferrientregas.user.UserRepository;
 import io.micrometer.common.util.StringUtils;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -28,10 +28,12 @@ public class DeliveryService {
    private final UserRepository userRepository;
    private final CustomerRepository customerRepository;
 
-    public DeliveryResponse getDelivery(UUID id) throws DeliveryNotFoundException {
+    public DeliveryResponse getDelivery(UUID id) {
         return this.deliveryRepository.findById(id)
                 .map(DeliveryMapper::toDeliveryResponse)
-                .orElseThrow(DeliveryNotFoundException::new);
+                .orElseThrow(
+                        ()-> new EntityNotFoundException("No delivery found for id:"
+                                + id));
     }
 
     public Page<DeliveryResponse> listDelivery(Pageable pageable){
@@ -46,20 +48,24 @@ public class DeliveryService {
 
     public DeliveryResponse updateDelivery(UUID id,
                                            DeliveryUpdateRequest deliveryRequest)
-            throws DeliveryNotFoundException {
-       DeliveryEntity delivery = deliveryRepository.findById(id)
-               .orElseThrow(DeliveryNotFoundException::new);
+            {
+       DeliveryEntity delivery = getDeliveryById(id);
         updateDeliveryFields(delivery, deliveryRequest);
         return DeliveryMapper.toDeliveryResponse(delivery);
     }
 
-   public Boolean deleteDelivery(UUID id) throws DeliveryNotFoundException {
-      DeliveryEntity delivery = this.deliveryRepository.findById(id)
-              .orElseThrow(DeliveryNotFoundException::new);
+   public Boolean deleteDelivery(UUID id) {
+      DeliveryEntity delivery = getDeliveryById(id);
       delivery.setDeleted(true);
       this.deliveryRepository.save(delivery);
 
       return true;
+   }
+
+   private DeliveryEntity getDeliveryById(UUID id){
+        return this.deliveryRepository.findById(id)
+                .orElseThrow(()-> new EntityNotFoundException("No delivery " +
+                        "found for id: " + id));
    }
 
    private DeliveryEntity createAndSaveDelivery(DeliveryRequest deliveryRequest) {

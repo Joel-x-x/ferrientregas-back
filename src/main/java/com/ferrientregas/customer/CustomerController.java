@@ -35,7 +35,7 @@ public class CustomerController {
 
     @GetMapping("/{id}")
     public ResponseEntity<ResultResponse<CustomerResponse, String>> get(
-            @PathVariable UUID id) throws CustomerNotFoundException {
+            @PathVariable UUID id) {
         return ResponseEntity.ok(
                 ResultResponse.success(this.customerService.get(id), 200)
         );
@@ -57,9 +57,7 @@ public class CustomerController {
 
     @PutMapping("/{id}")
     public ResponseEntity<ResultResponse<CustomerResponse, String>> update(
-            @RequestBody
-            CustomerUpdateRequest request,
-            @PathVariable UUID id) throws CustomerNotFoundException {
+            @RequestBody CustomerUpdateRequest request, @PathVariable UUID id){
         return ResponseEntity.ok(
                 ResultResponse.success(
                         this.customerService.update(request, id), 200));
