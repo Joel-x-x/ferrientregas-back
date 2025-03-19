@@ -53,6 +53,7 @@ public class CustomerService {
     public CustomerResponse update(CustomerUpdateRequest request, UUID id) {
         CustomerEntity customer = getCustomerById(id);
         updateCustomerFields(customer,request);
+        this.customerRepository.save(customer);
 
         return CustomerMapper.toCustomerResponse(customer);
     }
