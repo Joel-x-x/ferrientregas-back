@@ -5,9 +5,11 @@ import com.ferrientregas.customer.dto.CustomerResponse;
 import com.ferrientregas.customer.dto.CustomerUpdateRequest;
 import com.ferrientregas.customer.exception.CustomerNotFoundException;
 import com.ferrientregas.exception.ResultResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -42,6 +44,7 @@ public class CustomerController {
     }
 
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<ResultResponse<CustomerResponse, String>> create(
             @Validated @RequestBody CustomerRequest request) {
         CustomerResponse response = this.customerService.create(request);
@@ -57,17 +60,16 @@ public class CustomerController {
 
     @PutMapping("/{id}")
     public ResponseEntity<ResultResponse<CustomerResponse, String>> update(
-            @RequestBody CustomerUpdateRequest request, @PathVariable UUID id){
+            @Valid @RequestBody CustomerUpdateRequest request,
+            @PathVariable UUID id){
         return ResponseEntity.ok(
                 ResultResponse.success(
                         this.customerService.update(request, id), 200));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<ResultResponse<Boolean, String>> delete(
-            @PathVariable UUID id) throws CustomerNotFoundException {
-        return ResponseEntity.ok(
-                ResultResponse.success(
-                        this.customerService.delete(id), 200));
+    public ResponseEntity<Void> delete(@PathVariable UUID id){
+        this.customerService.delete(id);
+        return ResponseEntity.noContent().build();
     }
 }

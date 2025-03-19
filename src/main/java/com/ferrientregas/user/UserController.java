@@ -2,7 +2,6 @@ package com.ferrientregas.user;
 
 import com.ferrientregas.exception.ResultResponse;
 import com.ferrientregas.user.dto.*;
-import com.ferrientregas.user.exception.UserNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
