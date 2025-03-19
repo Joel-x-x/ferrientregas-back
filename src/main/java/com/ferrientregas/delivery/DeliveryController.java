@@ -6,7 +6,9 @@ import com.ferrientregas.delivery.dto.DeliveryUpdateRequest;
 import com.ferrientregas.exception.ResultResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -22,13 +24,13 @@ public class DeliveryController {
     private final DeliveryService deliveryService;
 
     @GetMapping
-    public ResponseEntity<ResultResponse<Object, String>> list(Pageable pageable) {
+    public ResponseEntity<ResultResponse<Page<DeliveryResponse>, String>> list(Pageable pageable) {
        return ResponseEntity.ok(ResultResponse.success(
                this.deliveryService.listDelivery(pageable), 200));
     }
 
     @GetMapping("{id}")
-    public ResponseEntity<ResultResponse<Object,String>> findById(
+    public ResponseEntity<ResultResponse<DeliveryResponse,String>> findById(
             @PathVariable UUID id) {
        return ResponseEntity.ok(ResultResponse.success(
                this.deliveryService.getDelivery(id),200
@@ -36,7 +38,7 @@ public class DeliveryController {
     }
 
     @PutMapping("{id}")
-    public ResponseEntity<ResultResponse<Object, String>> update(
+    public ResponseEntity<ResultResponse<DeliveryResponse, String>> update(
             @PathVariable UUID id,
             @RequestBody DeliveryUpdateRequest deliveryUpdateRequest
     ){
@@ -46,7 +48,8 @@ public class DeliveryController {
         ));
     }
     @PostMapping
-    public ResponseEntity<ResultResponse<Object,String>> create(
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResponseEntity<ResultResponse<DeliveryResponse,String>> create(
             @RequestBody @Valid DeliveryRequest deliveryRequest
     ){
         DeliveryResponse delivery = this.deliveryService
@@ -63,12 +66,9 @@ public class DeliveryController {
                 );
     }
 
-    @DeleteMapping("{id}")
-    public ResponseEntity<ResultResponse<Object,String>> delete(
-            @PathVariable UUID id
-    ){
-       return ResponseEntity.ok(ResultResponse.success(
-               this.deliveryService.deleteDelivery(id), 200
-       ));
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable UUID id){
+        this.deliveryService.deleteDelivery(id);
+        return ResponseEntity.noContent().build();
     }
 }

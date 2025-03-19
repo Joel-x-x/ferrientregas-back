@@ -44,7 +44,7 @@ public class DeliveryStatusService {
         return DeliveryStatusMapper.toDeliveryStatusResponse(deliveryStatus);
     }
 
-    public Boolean delete(UUID id) throws DeliveryStatusNotFoundException {
+    public Boolean delete(UUID id){
         DeliveryStatusEntity deliveryStatus = getDeliveryStatusById(id);
         deliveryStatus.setDeleted(true);
         this.deliveryStatusRepository.save(deliveryStatus);

@@ -6,11 +6,13 @@ import com.ferrientregas.paymenttype.dto.PaymentTypeResponse;
 import com.ferrientregas.paymenttype.dto.PaymentTypeUpdateRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -21,7 +23,7 @@ public class PaymentTypeController {
     private final PaymentTypeService paymentTypeService;
 
     @GetMapping
-    public ResponseEntity<ResultResponse<Object, String>> list() {
+    public ResponseEntity<ResultResponse<List<PaymentTypeResponse>, String>> list() {
         return ResponseEntity.ok(
                 ResultResponse.success(
                         this.paymentTypeService.list(), 200
@@ -30,14 +32,15 @@ public class PaymentTypeController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ResultResponse<Object, String>> get(
+    public ResponseEntity<ResultResponse<PaymentTypeResponse, String>> get(
             @PathVariable UUID id){
         return ResponseEntity.ok(
                 ResultResponse.success(this.paymentTypeService.get(id), 200));
     }
 
     @PostMapping
-    public ResponseEntity<ResultResponse<Object, String>> create(
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResponseEntity<ResultResponse<PaymentTypeResponse, String>> create(
             @Valid @RequestBody PaymentTypeRequest request) {
         PaymentTypeResponse response = this.paymentTypeService.create(request);
 
@@ -52,7 +55,7 @@ public class PaymentTypeController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ResultResponse<Object, String>> update(
+    public ResponseEntity<ResultResponse<PaymentTypeResponse, String>> update(
             @PathVariable UUID id,
             @RequestBody PaymentTypeUpdateRequest request){
         return ResponseEntity.ok(
@@ -61,10 +64,8 @@ public class PaymentTypeController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<ResultResponse<Object, String>> delete(
-            @PathVariable UUID id){
-        return ResponseEntity.ok(
-                ResultResponse.success(
-                        this.paymentTypeService.delete(id), 200));
+    public ResponseEntity<Void> delete(@PathVariable UUID id){
+        this.paymentTypeService.delete(id);
+        return ResponseEntity.noContent().build();
     }
 }
