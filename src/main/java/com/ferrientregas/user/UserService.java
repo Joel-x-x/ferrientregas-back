@@ -2,7 +2,6 @@ package com.ferrientregas.user;
 
 import com.ferrientregas.role.RoleRepository;
 import com.ferrientregas.user.dto.*;
-import com.ferrientregas.user.exception.UserNotFoundException;
 import io.micrometer.common.util.StringUtils;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -47,12 +46,11 @@ public class UserService {
       return UserMapper.toUserResponse(user);
    }
 
-   public Boolean deleteUser(UUID id){
+   public void deleteUser(UUID id){
        UserEntity user = getUserEntityById(id);
 
        user.setDeleted(true);
        userRepository.save(user);
-       return true;
    }
 
     public VerificationResponse verifyEmailToken(VerificationRequest request) {

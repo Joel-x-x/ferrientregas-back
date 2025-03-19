@@ -5,6 +5,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -14,4 +15,5 @@ public interface DeliveryRepository extends JpaRepository<DeliveryEntity,
     Optional<DeliveryEntity> findById(UUID id);
     Page<DeliveryEntity> findAllByDeletedIsFalse(Pageable pageable);
 
+    List<DeliveryEntity> findAllByDeliveryStatusName(String pendiente);
 }

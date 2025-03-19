@@ -1,6 +1,7 @@
-package com.ferrientregas.delivery.dto;
+package com.ferrientregas.delivery.utils;
 
 import com.ferrientregas.delivery.DeliveryEntity;
+import com.ferrientregas.delivery.dto.DeliveryResponse;
 
 public class DeliveryMapper {
     public static DeliveryResponse toDeliveryResponse(DeliveryEntity delivery) {
