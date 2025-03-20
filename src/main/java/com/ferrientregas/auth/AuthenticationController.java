@@ -3,7 +3,6 @@ package com.ferrientregas.auth;
 import com.ferrientregas.auth.dto.AuthenticationRequest;
 import com.ferrientregas.auth.dto.RegisterRequest;
 import com.ferrientregas.exception.ResultResponse;
-import com.ferrientregas.user.exception.UserNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -33,7 +32,7 @@ public class AuthenticationController {
     @PostMapping("/login")
     public ResponseEntity<ResultResponse<Object,String>> login(
             @RequestBody AuthenticationRequest request
-    ) throws UserNotFoundException {
+    ){
         return ResponseEntity.ok(ResultResponse.success(
                 this.authenticationService.authenticate(request), 200));
     }

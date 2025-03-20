@@ -11,8 +11,8 @@ import com.ferrientregas.customer.CustomerRepository;
 import com.ferrientregas.role.RoleEntity;
 import com.ferrientregas.role.RoleRepository;
 import com.ferrientregas.user.UserEntity;
-import com.ferrientregas.user.exception.UserNotFoundException;
 import com.ferrientregas.user.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -76,8 +76,7 @@ public class AuthenticationService {
     }
 
 
-    public AuthenticationResponse authenticate(AuthenticationRequest request)
-            throws UserNotFoundException {
+    public AuthenticationResponse authenticate(AuthenticationRequest request) {
         return userRepository.findByEmailIgnoreCase(request.email())
                 .map(user->{
                     authenticationManager.authenticate(
@@ -91,7 +90,10 @@ public class AuthenticationService {
                     String refreshToken = jwtService.generateRefreshToken(user);
 
                     return createAuthResponseByUser(token,refreshToken,user);
-                }).orElseThrow(UserNotFoundException::new);
+                }).orElseThrow(
+                        ()-> new EntityNotFoundException("No user found for " +
+                                "email: " + request.email())
+                );
     }
 
     private AuthenticationResponse createAuthResponseByUser(String accessToken
