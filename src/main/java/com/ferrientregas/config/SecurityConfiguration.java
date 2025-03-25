@@ -1,5 +1,6 @@
 package com.ferrientregas.config;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -50,7 +51,7 @@ public class SecurityConfiguration {
         public WebMvcConfigurer corsConfigurer() {
             return new WebMvcConfigurer() {
                 @Override
-                public void addCorsMappings(CorsRegistry registry) {
+                public void addCorsMappings( CorsRegistry registry) {
                     registry.addMapping("/**")
                             .allowedOrigins("*")
                             .allowedMethods("GET", "POST", "PUT", "DELETE")
