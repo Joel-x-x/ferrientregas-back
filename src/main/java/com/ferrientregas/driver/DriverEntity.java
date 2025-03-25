@@ -1,11 +1,11 @@
-package com.ferrientregas.driver;
-
-import com.ferrientregas.user.UserEntity;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
-import lombok.*;
-import lombok.experimental.SuperBuilder;
-
+//package com.ferrientregas.driver;
+//
+//import com.ferrientregas.user.UserEntity;
+//import jakarta.persistence.Entity;
+//import jakarta.persistence.Table;
+//import lombok.*;
+//import lombok.experimental.SuperBuilder;
+//
 //@EqualsAndHashCode(callSuper = true)
 //@Data
 //@ToString
@@ -14,6 +14,6 @@ import lombok.experimental.SuperBuilder;
 //@AllArgsConstructor
 //@Entity
 //@Table(name = "drivers")
-public class DriverEntity extends UserEntity {
-
-}
+//public class DriverEntity extends UserEntity {
+//
+//}
