@@ -1,5 +1,6 @@
 package com.ferrientregas.user;
 
+import com.ferrientregas.role.RoleEntity;
 import com.ferrientregas.role.RoleRepository;
 import com.ferrientregas.user.dto.*;
 import io.micrometer.common.util.StringUtils;
@@ -9,6 +10,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -17,6 +21,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
+    private static final Set<String> ROLES = Set.of("ADMIN", "DRIVER");
 
    public UserResponse getUser(UUID id){
         return this.userRepository.findById(id)
@@ -100,7 +105,17 @@ public class UserService {
                 .password(userRequest.password())
                 .profileImage(userRequest.profileImage())
                 .emailConfirmed(false)
-                .roles(this.roleRepository.findRoleEntityByName(userRequest.role()))
+                .roles(getOrCreateRole(userRequest.role()))
                 .build());
+    }
+
+    private Set<RoleEntity> getOrCreateRole(String role){
+        return Collections.singleton(this.roleRepository.findByName(role)
+                .orElseGet(()-> ROLES.stream().findFirst()
+                        .map(r -> roleRepository.save(
+                                RoleEntity.builder().name(r).build()))
+                        .orElseThrow(() -> new EntityNotFoundException(
+                                "Role not found"))
+                ));
     }
 }

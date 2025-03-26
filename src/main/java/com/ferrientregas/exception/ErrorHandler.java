@@ -1,5 +1,6 @@
 package com.ferrientregas.exception;
 
+import com.ferrientregas.firebase.FirebaseMessagingException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
@@ -22,6 +23,12 @@ public class ErrorHandler {
     public ResponseEntity<ResultResponse<Object,String>> handleNotFound(
             EntityNotFoundException exc){
         return buildErrorResponse(exc.getMessage(), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(FirebaseMessagingException.class)
+    public ResponseEntity<ResultResponse<Object,String>> handleFirebaseError(
+            FirebaseMessagingException exc){
+        return buildErrorResponse(exc.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
