@@ -3,6 +3,7 @@ package com.ferrientregas.delivery.dto;
 import com.ferrientregas.evidence.EvidenceEntity;
 import jakarta.validation.constraints.NotNull;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.UUID;
@@ -11,7 +12,7 @@ public record DeliveryRequest (
         String numeration,
         String invoiceNumber,
         @NotNull
-        String DeliveryDate,
+        LocalDate DeliveryDate,
         @NotNull
         LocalTime estimateHourInit,
         @NotNull

@@ -10,6 +10,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
@@ -28,9 +29,10 @@ public class DeliveryEntity extends Auditable {
 
     private String numeration;
     private String invoiceNumber;
-    private String deliveryDate;
+    private LocalDate deliveryDate;
     private LocalTime estimateHourInit;
     private LocalTime estimateHourEnd;
+    private LocalTime deliveryDoneHour;
 
     @ManyToOne
     @JoinColumn(name = "delivery_status_id", nullable = false)

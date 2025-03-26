@@ -4,14 +4,17 @@ import com.ferrientregas.customer.CustomerRepository;
 import com.ferrientregas.delivery.DeliveryEntity;
 import com.ferrientregas.delivery.DeliveryRepository;
 import com.ferrientregas.delivery.dto.DeliveryRequest;
+import com.ferrientregas.deliverystatus.DeliveryStatusEntity;
 import com.ferrientregas.deliverystatus.DeliveryStatusRepository;
 import com.ferrientregas.paymenttype.PaymentTypeRepository;
 import com.ferrientregas.user.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.Comparator;
 import java.util.List;
 
 import static java.time.LocalTime.now;
@@ -25,50 +28,17 @@ public class DeliveryFactory {
     private final UserRepository userRepository;
     private final CustomerRepository customerRepository;
     private final DeliveryRepository deliveryRepository;
-
-    /*
-     * TODO: Create the logic for making the hourInit be
-     *  automatic comparing it with the other existing deliveries
-     *  by default the hourEnd will be hourInit +1hour and it can
-     *  be updatable, the hourInit has to take the the deliveryDate
-     *  and get the first workable hour of the day if it isn't on
-     *  current working day, if the estimate hourEnd get over the
-     *  time adds 30 minutes and if it gets late then it would be
-     *  marked as overdue.
-     */
-
-    /*
-     * TODO: If a delivery it's done, it have to be removed from the list of
-     *  the undelivered ones.
-     */
-
-    /*
-     * TODO: If a delivery can be taken before the estimate hourInit, when
-     *  it's took by a driver, I need to get the hour when the delivery has
-     *  been taken and reassign the hourInit, so for making this possible I
-     *  have to create another field to set the delivered hour.
-     */
-
-    /*
-     * TODO: I have to define the workable hours, let's say the following ones:
-     *  Morning Hours: 8AM - 12PM
-     *  AfterNoon Hours: 13PM- 22PM
-     *  those are the available hours when a delivery can be done, if it
-     *  exist a delivery after 22PM it will be reassigned to the other day first
-     *  workable hour.
-     */
+    private static final String DELIVERY_STATUS = "PENDIENTE";
 
     public DeliveryEntity createDelivery(DeliveryRequest deliveryRequest) {
         return DeliveryEntity.builder()
                 .numeration(deliveryRequest.numeration())
                 .invoiceNumber(deliveryRequest.invoiceNumber())
                 .deliveryDate(deliveryRequest.DeliveryDate())
-                .estimateHourInit(now())
-                .estimateHourEnd(null)
+                .estimateHourInit(calculateEstimateHourInit(deliveryRequest))
+                .estimateHourEnd(deliveryRequest.estimateHourEnd().plusHours(1))
                 .deliveryStatus(
-                        deliveryStatusRepository.findByName(
-                                deliveryRequest.deliveryStatusName()
-                        )
+                        getOrCreateDeliveryStatus()
                 )
                 .paymentType(
                         paymentTypeRepository.findByName(
@@ -94,10 +64,59 @@ public class DeliveryFactory {
                 .build();
     }
 
-//    private LocalTime calculateEstimateHourInit() {
-//        List<DeliveryEntity> pendingDeliveries =
-//                deliveryRepository.findAllByDeliveryStatusName("PENDIENTE");
-//
-//
-//    }
+    private DeliveryStatusEntity getOrCreateDeliveryStatus() {
+        return this.deliveryStatusRepository.findByName(DELIVERY_STATUS)
+                .orElseGet(() -> this.deliveryStatusRepository.save(
+                        DeliveryStatusEntity.builder()
+                                .name(DELIVERY_STATUS)
+                                .build()
+                ));
+    }
+
+    private LocalTime calculateEstimateHourInit(DeliveryRequest deliveryRequest) {
+        List<DeliveryEntity> pendingDeliveries =
+                deliveryRepository.findAllByDeliveryStatusName(
+                        DELIVERY_STATUS);
+
+        // Workable Hours
+        LocalTime morningStartTime = LocalTime.of(8, 0);
+        LocalTime morningEndTime = LocalTime.of(12,0);
+        LocalTime afternoonStartTime = LocalTime.of(13,0);
+        LocalTime nightEndTime = LocalTime.of(22,0);
+
+        LocalDate deliveryDate = deliveryRequest.DeliveryDate();
+
+       if(pendingDeliveries.isEmpty()) {
+           if(now().isAfter(morningEndTime)) {
+              return afternoonStartTime;
+           }
+           if(now().isAfter(nightEndTime)) {
+               deliveryDate = deliveryDate.plusDays(1);
+               return morningStartTime;
+           }
+           if(now().isBefore(morningStartTime)) {
+               return morningStartTime;
+           }
+           return now();
+       }
+
+
+       // Filtering by the same day
+        LocalDate finalDeliveryDate = deliveryDate;
+        List<DeliveryEntity> deliveriesSameDay = pendingDeliveries.stream()
+                .filter(d -> d.getDeliveryDate().equals(finalDeliveryDate))
+                .sorted(Comparator.comparing(DeliveryEntity::getEstimateHourEnd))
+                .toList();
+
+        LocalTime lastDeliveryEnd = deliveriesSameDay.get(deliveriesSameDay
+                .size() - 1).getEstimateHourEnd();
+
+        if (lastDeliveryEnd.isAfter(nightEndTime)) {
+            deliveryDate = deliveryDate.plusDays(1);
+            return morningStartTime;
+        }
+
+        return lastDeliveryEnd;
+
+    }
 }

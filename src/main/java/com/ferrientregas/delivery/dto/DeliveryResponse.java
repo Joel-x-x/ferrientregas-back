@@ -17,8 +17,7 @@ public record DeliveryResponse (
         UUID id,
         String numeration,
         String invoiceNumber,
-        @NotNull
-        String deliveryDate,
+        java.time.LocalDate deliveryDate,
         @NotNull
         LocalTime estimateHourInit,
         @NotNull
