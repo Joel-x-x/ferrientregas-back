@@ -10,6 +10,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalTime;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 import static java.time.LocalTime.now;
@@ -53,6 +57,44 @@ public class DeliveryService {
       DeliveryEntity delivery = getDeliveryById(id);
       delivery.setDeleted(true);
       deliveryRepository.save(delivery);
+   }
+
+   public Optional<Map<String, LocalTime>> getNextAvailableHours(){
+
+       LocalTime morningStartTime = LocalTime.of(8, 0);
+       LocalTime nightEndTime = LocalTime.of(18,0);
+
+       List<DeliveryEntity> deliveries =
+               deliveryRepository.findTodayDeliveries();
+
+       LocalTime possibleStart = morningStartTime;
+
+       for(DeliveryEntity delivery : deliveries){
+           if(possibleStart.plusHours(1).isBefore(delivery
+                   .getEstimateHourInit())|| possibleStart.plusHours(1)
+                   .equals(delivery.getEstimateHourInit())
+           ){
+               return Optional.of(Map.of(
+                       "estimatedStart", possibleStart,
+                       "estimatedEnd", possibleStart.plusHours(1)
+               ));
+           }
+
+           if(delivery.getEstimateHourEnd().isAfter(possibleStart)){
+               possibleStart = delivery.getEstimateHourEnd();
+           }
+       }
+
+       if(possibleStart.plusHours(1).isBefore(nightEndTime)||
+       possibleStart.plusHours(1).equals(nightEndTime)){
+           return Optional.of(Map.of(
+                   "estimatedStart", possibleStart,
+                   "estimatedEnd", possibleStart.plusHours(1)
+           ));
+       }
+
+       return Optional.empty();
+
    }
 
    private DeliveryEntity getDeliveryById(UUID id){

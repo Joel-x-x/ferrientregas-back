@@ -14,6 +14,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.time.LocalTime;
+import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 @RestController
@@ -29,7 +32,7 @@ public class DeliveryController {
                this.deliveryService.listDelivery(pageable), 200));
     }
 
-    @GetMapping("{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<ResultResponse<DeliveryResponse,String>> findById(
             @PathVariable UUID id) {
        return ResponseEntity.ok(ResultResponse.success(
@@ -37,7 +40,7 @@ public class DeliveryController {
        ));
     }
 
-    @PutMapping("{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<ResultResponse<DeliveryResponse, String>> update(
             @PathVariable UUID id,
             @RequestBody DeliveryUpdateRequest deliveryUpdateRequest
@@ -64,6 +67,15 @@ public class DeliveryController {
                 .body(
                         ResultResponse.success(delivery, 201)
                 );
+    }
+
+    @GetMapping("/next-available-slot")
+    public ResponseEntity<ResultResponse<Optional<Map<String,LocalTime>>,
+            String>>
+    nextAvailableSlot(){
+        return ResponseEntity.ok(ResultResponse.success(
+                this.deliveryService.getNextAvailableHours(), 200
+        ));
     }
 
     @DeleteMapping("/{id}")

@@ -4,12 +4,12 @@ import com.ferrientregas.customer.CustomerRepository;
 import com.ferrientregas.delivery.DeliveryEntity;
 import com.ferrientregas.delivery.DeliveryRepository;
 import com.ferrientregas.delivery.dto.DeliveryRequest;
+import com.ferrientregas.delivery.rules.DeliveryBusinessLogicValidations;
 import com.ferrientregas.deliverystatus.DeliveryStatusEntity;
 import com.ferrientregas.deliverystatus.DeliveryStatusRepository;
 import com.ferrientregas.paymenttype.PaymentTypeRepository;
 import com.ferrientregas.user.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
@@ -29,6 +29,7 @@ public class DeliveryFactory {
     private final CustomerRepository customerRepository;
     private final DeliveryRepository deliveryRepository;
     private static final String DELIVERY_STATUS = "PENDIENTE";
+    private final List<DeliveryBusinessLogicValidations> deliveryBusinessLogicValidations;
 
     public DeliveryEntity createDelivery(DeliveryRequest deliveryRequest) {
         return DeliveryEntity.builder()
@@ -75,48 +76,15 @@ public class DeliveryFactory {
 
     private LocalTime calculateEstimateHourInit(DeliveryRequest deliveryRequest) {
         List<DeliveryEntity> pendingDeliveries =
-                deliveryRepository.findAllByDeliveryStatusName(
-                        DELIVERY_STATUS);
+                deliveryRepository.findTodayDeliveries();
 
         // Workable Hours
-        LocalTime morningStartTime = LocalTime.of(8, 0);
-        LocalTime morningEndTime = LocalTime.of(12,0);
-        LocalTime afternoonStartTime = LocalTime.of(13,0);
-        LocalTime nightEndTime = LocalTime.of(22,0);
-
-        LocalDate deliveryDate = deliveryRequest.DeliveryDate();
-
-       if(pendingDeliveries.isEmpty()) {
-           if(now().isAfter(morningEndTime)) {
-              return afternoonStartTime;
-           }
-           if(now().isAfter(nightEndTime)) {
-               deliveryDate = deliveryDate.plusDays(1);
-               return morningStartTime;
-           }
-           if(now().isBefore(morningStartTime)) {
-               return morningStartTime;
-           }
-           return now();
-       }
-
-
-       // Filtering by the same day
-        LocalDate finalDeliveryDate = deliveryDate;
-        List<DeliveryEntity> deliveriesSameDay = pendingDeliveries.stream()
-                .filter(d -> d.getDeliveryDate().equals(finalDeliveryDate))
-                .sorted(Comparator.comparing(DeliveryEntity::getEstimateHourEnd))
-                .toList();
-
-        LocalTime lastDeliveryEnd = deliveriesSameDay.get(deliveriesSameDay
-                .size() - 1).getEstimateHourEnd();
-
-        if (lastDeliveryEnd.isAfter(nightEndTime)) {
-            deliveryDate = deliveryDate.plusDays(1);
-            return morningStartTime;
-        }
-
-        return lastDeliveryEnd;
-
+        deliveryBusinessLogicValidations.forEach(
+                validation -> {
+                    validation.validateInitHour(deliveryRequest.DeliveryDate(),
+                            pendingDeliveries);
+                }
+        );
+        return now();
     }
 }
