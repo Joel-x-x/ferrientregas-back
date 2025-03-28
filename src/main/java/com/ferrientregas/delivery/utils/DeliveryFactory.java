@@ -76,7 +76,7 @@ public class DeliveryFactory {
 
     private LocalTime calculateEstimateHourInit(DeliveryRequest deliveryRequest) {
         List<DeliveryEntity> pendingDeliveries =
-                deliveryRepository.findTodayDeliveries();
+                deliveryRepository.findPendingDeliveriesTodayOrderByEstimateHourInit();
 
         // Workable Hours
         deliveryBusinessLogicValidations.forEach(

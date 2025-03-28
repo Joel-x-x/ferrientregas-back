@@ -65,7 +65,7 @@ public class DeliveryService {
        LocalTime nightEndTime = LocalTime.of(18,0);
 
        List<DeliveryEntity> deliveries =
-               deliveryRepository.findTodayDeliveries();
+               deliveryRepository.findPendingDeliveriesTodayOrderByEstimateHourInit();
 
        LocalTime possibleStart = morningStartTime;
 
@@ -94,7 +94,6 @@ public class DeliveryService {
        }
 
        return Optional.empty();
-
    }
 
    private DeliveryEntity getDeliveryById(UUID id){

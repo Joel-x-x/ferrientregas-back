@@ -18,8 +18,7 @@ public interface DeliveryRepository extends JpaRepository<DeliveryEntity,
     Page<DeliveryEntity> findAllByDeletedIsFalse(Pageable pageable);
     List<DeliveryEntity> findAllByDeliveryStatusName(String pendiente);
 
-    @Query("SELECT d FROM DeliveryEntity d WHERE CAST(d.deliveryDate AS DATE)" +
-            " = CURRENT_DATE AND d.deliveryStatus = 'PENDIENTE' ORDER BY d" +
-            ".estimateHourInit")
-    List<DeliveryEntity> findTodayDeliveries();
+    @Query("SELECT d FROM DeliveryEntity d WHERE d.deliveryDate = CURRENT_DATE " +
+            "AND d.deliveryStatus.name = 'PENDIENTE' ORDER BY d.estimateHourInit")
+    List<DeliveryEntity> findPendingDeliveriesTodayOrderByEstimateHourInit();
 }
