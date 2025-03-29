@@ -8,6 +8,7 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
@@ -21,9 +22,11 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
-    private static final Set<String> ROLES = Set.of("ADMIN", "DRIVER");
+    private static final Set<String> ROLES = Set.of("ADMIN", "DRIVER",
+            "EMPLOYEE");
+    private final PasswordEncoder passwordEncoder;
 
-   public UserResponse getUser(UUID id){
+    public UserResponse getUser(UUID id){
         return this.userRepository.findById(id)
                 .map(UserMapper::toUserResponse)
                 .orElseThrow(()->
@@ -102,7 +105,7 @@ public class UserService {
                 .firstNames(userRequest.firstNames())
                 .lastNames(userRequest.lastNames())
                 .email(userRequest.email())
-                .password(userRequest.password())
+                .password(passwordEncoder.encode(userRequest.password()))
                 .profileImage(userRequest.profileImage())
                 .emailConfirmed(false)
                 .roles(getOrCreateRole(userRequest.role()))
@@ -110,12 +113,15 @@ public class UserService {
     }
 
     private Set<RoleEntity> getOrCreateRole(String role){
-        return Collections.singleton(this.roleRepository.findByName(role)
-                .orElseGet(()-> ROLES.stream().findFirst()
-                        .map(r -> roleRepository.save(
-                                RoleEntity.builder().name(r).build()))
-                        .orElseThrow(() -> new EntityNotFoundException(
-                                "Role not found"))
-                ));
+        return Collections.singleton(
+                this.roleRepository.findByName(role)
+                        .orElseGet(() ->
+                                ROLES.stream()
+                                        .filter(r -> r.equals(role))
+                                        .findFirst()
+                                        .map(r -> roleRepository.save(new RoleEntity(r)))
+                                        .orElseThrow(() -> new EntityNotFoundException("Role not found")
+                        )
+        ));
     }
 }
