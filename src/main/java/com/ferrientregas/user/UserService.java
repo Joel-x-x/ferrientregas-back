@@ -113,12 +113,15 @@ public class UserService {
     }
 
     private Set<RoleEntity> getOrCreateRole(String role){
-        return Collections.singleton(this.roleRepository.findByName(role)
-                .orElseGet(()-> ROLES.stream().findFirst()
-                        .map(r -> roleRepository.save(
-                                RoleEntity.builder().name(r).build()))
-                        .orElseThrow(() -> new EntityNotFoundException(
-                                "Role not found"))
-                ));
+        return Collections.singleton(
+                this.roleRepository.findByName(role)
+                        .orElseGet(() ->
+                                ROLES.stream()
+                                        .filter(r -> r.equals(role))
+                                        .findFirst()
+                                        .map(r -> roleRepository.save(new RoleEntity(r)))
+                                        .orElseThrow(() -> new EntityNotFoundException("Role not found")
+                        )
+        ));
     }
 }
