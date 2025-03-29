@@ -94,8 +94,8 @@ public class UserService {
         }
         user.setProfileImage(userUpdateRequest.profileImage());
         user.setEmailConfirmed(userUpdateRequest.emailConfirmed());
-        user.setRoles(this.roleRepository
-                .findRoleEntityByName(userUpdateRequest.role()));
+
+        user.setRoles(getOrCreateRole(userUpdateRequest.role()));
 
         userRepository.save(user);
     }
