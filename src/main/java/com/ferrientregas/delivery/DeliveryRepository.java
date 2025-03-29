@@ -1,5 +1,6 @@
 package com.ferrientregas.delivery;
 
+import com.ferrientregas.delivery.dto.DeliveryResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -21,4 +22,7 @@ public interface DeliveryRepository extends JpaRepository<DeliveryEntity,
     @Query("SELECT d FROM DeliveryEntity d WHERE d.deliveryDate = CURRENT_DATE " +
             "AND d.deliveryStatus.name = 'PENDIENTE' ORDER BY d.estimateHourInit")
     List<DeliveryEntity> findPendingDeliveriesTodayOrderByEstimateHourInit();
+
+    Page<DeliveryEntity> findAllByUserIdAndDeletedIsFalse(UUID userId,
+                                                          Pageable pageable);
 }

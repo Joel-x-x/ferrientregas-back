@@ -33,6 +33,13 @@ public class DeliveryService {
                                 + id));
     }
 
+    public Page<DeliveryResponse> getDeliveryByUserId(Pageable pageable, UUID
+                                                      userId){
+        return deliveryRepository.findAllByUserIdAndDeletedIsFalse(userId, pageable)
+                .map(DeliveryMapper::toDeliveryResponse);
+
+    }
+
     public Page<DeliveryResponse> listDelivery(Pageable pageable){
         return deliveryRepository.findAllByDeletedIsFalse(pageable)
                 .map(DeliveryMapper::toDeliveryResponse);

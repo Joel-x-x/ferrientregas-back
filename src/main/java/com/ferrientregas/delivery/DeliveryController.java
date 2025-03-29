@@ -40,6 +40,16 @@ public class DeliveryController {
        ));
     }
 
+    @GetMapping("/by-user/{userId}")
+    public ResponseEntity<ResultResponse<Page<DeliveryResponse>,String>> findByUserId(
+            @PathVariable UUID userId,
+            Pageable pageable
+    ){
+       return ResponseEntity.ok(ResultResponse.success(
+               this.deliveryService.getDeliveryByUserId(pageable, userId), 200
+       ));
+    }
+
     @PutMapping("/{id}")
     public ResponseEntity<ResultResponse<DeliveryResponse, String>> update(
             @PathVariable UUID id,
