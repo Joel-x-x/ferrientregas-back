@@ -1,0 +1,18 @@
+services:
+  # Back spring boot
+  back:
+    build:
+      context: ./back
+      dockerfile: Dockerfile
+    container_name: backend_container
+    restart: always
+    depends_on:
+      - sqlserver
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:sqlserver://sqlserver:1433;databaseName=shenzhen;encrypt=false
+      SPRING_DATASOURCE_USERNAME: sa
+      SPRING_DATASOURCE_PASSWORD: S3guro!Pass
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      API_SECURITY_SECRET: 96fbe8547677e92c18a10f72c4c72050ab1943c6605881c1fbf11a07ce5a4378
+    ports:
+      - "8080:8080"

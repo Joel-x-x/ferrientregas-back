@@ -37,6 +37,11 @@ public class UserService {
               .map(UserMapper::toUserResponse);
    }
 
+    public Page<UserResponse> listByRole(Pageable pageable, String role){
+        return this.userRepository.findAllByDeletedIsFalseAndRolesNameContains(pageable, role)
+                .map(UserMapper::toUserResponse);
+    }
+
    public UserResponse createUser(UserRequest userRequest){
      UserEntity user = createAndSaveUser(userRequest);
      return UserMapper.toUserResponse(user);
