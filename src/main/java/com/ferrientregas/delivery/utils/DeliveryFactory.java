@@ -41,11 +41,11 @@ public class DeliveryFactory {
                 .deliveryStatus(
                         getOrCreateDeliveryStatus()
                 )
-                .paymentType(
-                        paymentTypeRepository.findByName(
-                                deliveryRequest.paymentType()
-                        )
-                )
+//                .paymentType(
+//                        paymentTypeRepository.findByName(
+//                                deliveryRequest.paymentType()
+//                        )
+//                )
                 .credit(deliveryRequest.credit())
                 .total(deliveryRequest.total())
                 .evidence(deliveryRequest.evidence())

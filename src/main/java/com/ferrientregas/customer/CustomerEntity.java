@@ -22,6 +22,4 @@ public class CustomerEntity extends UserEntity {
     private String addressMaps;
     private String phone;
     private LocalDate birthDate;
-
-
 }

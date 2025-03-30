@@ -3,6 +3,7 @@ package com.ferrientregas.delivery.dto;
 import com.ferrientregas.evidence.EvidenceEntity;
 import jakarta.validation.constraints.NotNull;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
@@ -22,9 +23,9 @@ public record DeliveryRequest (
         @NotNull
         String paymentType,
         @NotNull
-        Double credit,
+        BigDecimal credit,
         @NotNull
-        Double total,
+        BigDecimal total,
         @NotNull
         List<EvidenceEntity> evidence,
         @NotNull

@@ -50,11 +50,11 @@ public class DeliveryUpdater {
         delivery.setEstimateHourEnd(deliveryRequest.estimateHourInit().plusHours(1));
         delivery.setDeliveryStatus(getDeliveryStatus(deliveryRequest
                 .deliveryStatusName()));
-        delivery.setPaymentType(
-                this.paymentTypeRepository.findByName(
-                        deliveryRequest.paymentType()
-                )
-        );
+//        delivery.setPaymentType(
+//                this.paymentTypeRepository.findByName(
+//                        deliveryRequest.paymentType()
+//                )
+//        );
         delivery.setCredit(deliveryRequest.credit());
         delivery.setTotal(deliveryRequest.total());
         delivery.setEvidence(deliveryRequest.evidence());

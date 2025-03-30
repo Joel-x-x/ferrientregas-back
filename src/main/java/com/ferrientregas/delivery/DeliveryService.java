@@ -1,6 +1,7 @@
 package com.ferrientregas.delivery;
 
 import com.ferrientregas.delivery.dto.*;
+import com.ferrientregas.delivery.service.CreateFirstInstanceDeliveryService;
 import com.ferrientregas.delivery.utils.DeliveryFactory;
 import com.ferrientregas.delivery.utils.DeliveryMapper;
 import com.ferrientregas.delivery.utils.DeliveryUpdater;
@@ -10,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
@@ -24,6 +26,7 @@ public class DeliveryService {
    private final DeliveryRepository deliveryRepository;
    private final DeliveryFactory deliveryFactory;
    private final DeliveryUpdater deliveryUpdater;
+   private final CreateFirstInstanceDeliveryService createFirstInstanceDeliveryService;
 
     public DeliveryResponse getDelivery(UUID id) {
         return deliveryRepository.findById(id)
@@ -49,6 +52,17 @@ public class DeliveryService {
        DeliveryEntity delivery = deliveryFactory.createDelivery(deliveryRequest);
        deliveryRepository.save(delivery);
        return DeliveryMapper.toDeliveryResponse(delivery);
+   }
+
+    /***
+     * Create first instance of delivery
+     * This method generate all data that the front needs but no persist the entity
+     * generate id, date, hour estimated init, hour estimated end, delivery status
+     * and payment type.
+     * @return DeliveryEntity
+     */
+   public DeliveryResponse createFirst() {
+       return createFirstInstanceDeliveryService.create();
    }
 
     public DeliveryResponse updateDelivery(UUID id,
@@ -108,4 +122,5 @@ public class DeliveryService {
                 .orElseThrow(()-> new EntityNotFoundException("No delivery " +
                         "found for id: " + id));
    }
+
 }

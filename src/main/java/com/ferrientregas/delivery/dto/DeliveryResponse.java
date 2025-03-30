@@ -8,6 +8,7 @@ import com.ferrientregas.user.UserEntity;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 
+import java.math.BigDecimal;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.UUID;
@@ -27,9 +28,9 @@ public record DeliveryResponse (
         @NotNull
         PaymentTypeEntity paymentType,
         @NotNull
-        Double credit,
+        BigDecimal credit,
         @NotNull
-        Double total,
+        BigDecimal total,
         @NotNull
         List<EvidenceEntity> evidence,
         @NotNull

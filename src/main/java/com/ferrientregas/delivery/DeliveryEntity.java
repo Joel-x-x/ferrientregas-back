@@ -10,6 +10,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
@@ -40,8 +41,8 @@ public class DeliveryEntity extends Auditable {
     @ManyToOne
     @JoinColumn(name = "payment_type_id", nullable = false)
     private PaymentTypeEntity paymentType;
-    private Double credit;
-    private Double total;
+    private BigDecimal credit = BigDecimal.ZERO;
+    private BigDecimal total = BigDecimal.ZERO;
 
     @OneToMany(mappedBy = "url", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<EvidenceEntity> evidence;
@@ -65,7 +66,8 @@ public class DeliveryEntity extends Auditable {
     }
 
     @PreUpdate
-    public void onUpdate(){
-       this.setUpdatedAt(now());
+    protected void onUpdate() {
+        this.setUpdatedAt(now());
+        if(this.isDeleted()) this.setDeletedAt(now());
     }
 }

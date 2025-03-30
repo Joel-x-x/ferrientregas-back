@@ -60,6 +60,7 @@ public class DeliveryController {
                 200
         ));
     }
+
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<ResultResponse<DeliveryResponse,String>> create(
@@ -77,6 +78,13 @@ public class DeliveryController {
                 .body(
                         ResultResponse.success(delivery, 201)
                 );
+    }
+
+    @GetMapping("/create-first")
+    public ResponseEntity<ResultResponse<DeliveryResponse,String>> createFirst() {
+        return ResponseEntity.ok(ResultResponse.success(
+                this.deliveryService.createFirst(), 200
+        ));
     }
 
     @GetMapping("/next-available-slot")
