@@ -11,10 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -113,7 +110,7 @@ public class UserService {
     }
 
     private Set<RoleEntity> getOrCreateRole(String role){
-        return Collections.singleton(
+        return new HashSet<>(Collections.singleton(
                 this.roleRepository.findByName(role)
                         .orElseGet(() ->
                                 ROLES.stream()
@@ -122,6 +119,6 @@ public class UserService {
                                         .map(r -> roleRepository.save(new RoleEntity(r)))
                                         .orElseThrow(() -> new EntityNotFoundException("Role not found")
                         )
-        ));
+        )));
     }
 }
