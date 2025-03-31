@@ -4,15 +4,18 @@ import com.ferrientregas.delivery.dto.DeliveryRequest;
 import com.ferrientregas.delivery.dto.DeliveryResponse;
 import com.ferrientregas.delivery.dto.DeliveryUpdateRequest;
 import com.ferrientregas.exception.ResultResponse;
+import com.ferrientregas.user.UserEntity;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.Authenticator;
 import java.net.URI;
 import java.time.LocalTime;
 import java.util.Map;
@@ -27,16 +30,26 @@ public class DeliveryController {
     private final DeliveryService deliveryService;
 
     @GetMapping
-    public ResponseEntity<ResultResponse<Page<DeliveryResponse>, String>> list(Pageable pageable) {
+    public ResponseEntity<ResultResponse<Page<DeliveryResponse>, String>> getAll(Pageable pageable) {
        return ResponseEntity.ok(ResultResponse.success(
-               this.deliveryService.listDelivery(pageable), 200));
+               this.deliveryService.getAll(pageable), 200));
+    }
+
+    @GetMapping("/delivery-status")
+    public ResponseEntity<ResultResponse<Page<DeliveryResponse>, String>> getAllByDeliveryStatus(
+            Pageable pageable,
+            Authentication authentication,
+            @RequestParam
+            String deliveryStatus) {
+        return ResponseEntity.ok(ResultResponse.success(
+                this.deliveryService.getAllByDeliveryStatus(pageable, authentication, deliveryStatus), 200));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<ResultResponse<DeliveryResponse,String>> findById(
             @PathVariable UUID id) {
        return ResponseEntity.ok(ResultResponse.success(
-               this.deliveryService.getDelivery(id),200
+               this.deliveryService.getById(id),200
        ));
     }
 
@@ -46,7 +59,7 @@ public class DeliveryController {
             Pageable pageable
     ){
        return ResponseEntity.ok(ResultResponse.success(
-               this.deliveryService.getDeliveryByUserId(pageable, userId), 200
+               this.deliveryService.getByUserId(pageable, userId), 200
        ));
     }
 

@@ -1,13 +1,11 @@
 package com.ferrientregas.delivery.rules;
 
-import com.ferrientregas.delivery.exception.DeliveryBusinessLogicException;
 import com.ferrientregas.delivery.DeliveryEntity;
+import com.ferrientregas.delivery.exception.DeliveryBusinessLogicException;
 
 import java.time.LocalDate;
-import java.util.List;
+import java.time.LocalTime;
 
 public interface DeliveryBusinessLogicValidations {
-    void validateInitHour(LocalDate deliveryDate,
-                          List<DeliveryEntity> pendingDeliveries) throws
-            DeliveryBusinessLogicException;
+    void validateInitHour(DeliveryEntity delivery);
 }

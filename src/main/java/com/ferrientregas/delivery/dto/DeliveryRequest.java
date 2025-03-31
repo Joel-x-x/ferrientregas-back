@@ -36,5 +36,5 @@ public record DeliveryRequest (
         String deliveryData,
         String observations,
         String comments
-){
+) {
 }

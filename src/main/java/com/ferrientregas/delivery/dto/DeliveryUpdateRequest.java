@@ -22,8 +22,8 @@ public record DeliveryUpdateRequest(
         BigDecimal credit,
         BigDecimal total,
         List<EvidenceEntity> evidence,
-        UUID user,
-        UUID customer,
+        UUID userId,
+        UUID customerId,
         String deliveryData,
         String observations,
         String comments

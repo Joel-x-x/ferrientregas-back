@@ -5,10 +5,12 @@ import com.ferrientregas.delivery.service.CreateFirstInstanceDeliveryService;
 import com.ferrientregas.delivery.service.CreateDeliveryService;
 import com.ferrientregas.delivery.utils.DeliveryMapper;
 import com.ferrientregas.delivery.service.UpdateDeliveryService;
+import com.ferrientregas.user.UserEntity;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalTime;
@@ -27,7 +29,7 @@ public class DeliveryService {
    private final UpdateDeliveryService updateDeliveryService;
    private final CreateFirstInstanceDeliveryService createFirstInstanceDeliveryService;
 
-    public DeliveryResponse getDelivery(UUID id) {
+    public DeliveryResponse getById(UUID id) {
         return deliveryRepository.findById(id)
                 .map(DeliveryMapper::toDeliveryResponse)
                 .orElseThrow(
@@ -35,28 +37,35 @@ public class DeliveryService {
                                 + id));
     }
 
-    public Page<DeliveryResponse> getDeliveryByUserId(Pageable pageable, UUID
+    public Page<DeliveryResponse> getByUserId(Pageable pageable, UUID
                                                       userId){
         return deliveryRepository.findAllByUserIdAndDeletedIsFalse(userId, pageable)
                 .map(DeliveryMapper::toDeliveryResponse);
 
     }
 
-    public Page<DeliveryResponse> listDelivery(Pageable pageable){
+    public Page<DeliveryResponse> getAll(Pageable pageable){
         return deliveryRepository.findAllByDeletedIsFalse(pageable)
                 .map(DeliveryMapper::toDeliveryResponse);
     }
 
-   public DeliveryResponse createDelivery(DeliveryRequest deliveryRequest) {
-       DeliveryEntity delivery = createDeliveryService.createDelivery(deliveryRequest);
-       deliveryRepository.save(delivery);
-       return DeliveryMapper.toDeliveryResponse(delivery);
-   }
+    public Page<DeliveryResponse> getAllByDeliveryStatus(Pageable pageable, Authentication authentication, String deliveryStatus) {
+        UserEntity user = (UserEntity) authentication.getPrincipal();
+
+        return deliveryRepository.findAllByDeletedIsFalseAndUserAndDeliveryStatus_Name(pageable, user, deliveryStatus)
+                .map(DeliveryMapper::toDeliveryResponse);
+    }
+
+    public DeliveryResponse createDelivery(DeliveryRequest deliveryRequest) {
+        DeliveryEntity delivery = createDeliveryService.createDelivery(deliveryRequest);
+        deliveryRepository.save(delivery);
+        return DeliveryMapper.toDeliveryResponse(delivery);
+    }
 
     /***
-     * Create first instance of delivery
-     * This method generate all data that the front needs but no persist the entity
-     * generate id, date, hour estimated init, hour estimated end, delivery status
+     * Create first instance of delivery,
+     * this method generate all data that needs to create a generic delivery but no persist the entity
+     * generate id, date, estimated hour init, estimated hour end, delivery status
      * and payment type.
      * @return DeliveryEntity
      */
@@ -67,8 +76,7 @@ public class DeliveryService {
     public DeliveryResponse updateDelivery(UUID id,
             DeliveryUpdateRequest deliveryRequest
     ){
-       DeliveryEntity delivery = getDeliveryById(id);
-        updateDeliveryService.update(delivery, deliveryRequest);
+        DeliveryEntity delivery = updateDeliveryService.update(deliveryRequest);
         deliveryRepository.save(delivery);
         return DeliveryMapper.toDeliveryResponse(delivery);
     }
@@ -79,7 +87,8 @@ public class DeliveryService {
       deliveryRepository.save(delivery);
    }
 
-   /*** Another Methods ***/
+
+   /** Another Methods **/
 
    public Optional<Map<String, LocalTime>> getNextAvailableHours(){
 

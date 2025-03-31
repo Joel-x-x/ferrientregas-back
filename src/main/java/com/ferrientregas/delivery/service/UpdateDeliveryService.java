@@ -5,33 +5,30 @@ import com.ferrientregas.delivery.DeliveryEntity;
 import com.ferrientregas.delivery.DeliveryRepository;
 import com.ferrientregas.delivery.dto.DeliveryUpdateRequest;
 import com.ferrientregas.delivery.rules.DeliveryBusinessLogicValidations;
-import com.ferrientregas.deliverystatus.DeliveryStatusEntity;
-import com.ferrientregas.deliverystatus.DeliveryStatusRepository;
-import com.ferrientregas.paymenttype.PaymentTypeRepository;
 import com.ferrientregas.user.UserRepository;
 import io.micrometer.common.util.StringUtils;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalTime;
 import java.util.List;
-import java.util.Set;
 
 import static java.time.LocalTime.now;
 
 @Component
 @RequiredArgsConstructor
 public class UpdateDeliveryService {
-    private final DeliveryStatusRepository deliveryStatusRepository;
-    private final PaymentTypeRepository paymentTypeRepository;
+
+    private final CreateEntitiesDefaultService createEntitiesDefaultService;
     private final DeliveryRepository deliveryRepository;
     private final UserRepository userRepository;
     private final CustomerRepository customerRepository;
     private final List<DeliveryBusinessLogicValidations> deliveryBusinessLogicValidations;
 
-    public void update(DeliveryEntity delivery,
-                                      DeliveryUpdateRequest request) {
+    public DeliveryEntity update(DeliveryUpdateRequest request) {
+
+        DeliveryEntity delivery = this.deliveryRepository.findById(request.id())
+                .orElseThrow(() -> new EntityNotFoundException("Delivery not found"));
 
         if(!StringUtils.isBlank(request.invoiceNumber())) {
             delivery.setInvoiceNumber(request.invoiceNumber());
@@ -40,21 +37,16 @@ public class UpdateDeliveryService {
             delivery.setDeliveryDate(request.deliveryDate());
         }
         if(request.estimateHourInit() != null) {
-            delivery.setEstimateHourInit(calculateEstimateHourInit(request));
+            delivery.setEstimateHourInit(request.estimateHourInit());
         }
         if(request.estimateHourEnd() != null) {
-            delivery.setEstimateHourEnd(request.estimateHourInit().plusHours(1));
+            delivery.setEstimateHourEnd(request.estimateHourEnd());
         }
-//        if(request.deliveryStatus() != null) {
-//            delivery.setDeliveryStatus(getDeliveryStatus(request
-//                    .deliveryStatus()));
-//        }
+        if(request.deliveryStatus() != null) {
+            this.createEntitiesDefaultService.getOrCreateDeliveryStatus(request.deliveryStatus());
+        }
         if(request.paymentType() != null) {
-//            delivery.setPaymentType(
-//                    this.paymentTypeRepository.findByName(
-//                            request.paymentType()
-//                    )
-//            );
+            this.createEntitiesDefaultService.getOrCreatePaymentType(request.paymentType());
         }
         if(request.credit() != null) {
             delivery.setCredit(request.credit());
@@ -62,43 +54,39 @@ public class UpdateDeliveryService {
         if(request.total() != null) {
             delivery.setTotal(request.total());
         }
-        delivery.setEvidence(request.evidence());
-        delivery.setUser(
-                this.userRepository.findUserEntityById(
-                        request.user()
-                )
-        );
-        delivery.setCustomer(
-                this.customerRepository.findCustomerEntityById(
-                        request.customer()
-                )
-        );
-        delivery.setDeliveryData(request.deliveryData());
-        delivery.setObservations(request.observations());
-        delivery.setComments(request.comments());
-    }
+        if(request.evidence() != null) {
+            delivery.setEvidence(request.evidence());
+        }
+        if(request.userId() != null) {
+            delivery.setUser(
+                    this.userRepository.findById(request.userId())
+                            .orElseThrow(() -> new EntityNotFoundException("User not found"))
+            );
+        }
+        if(request.customerId() != null) {
+            delivery.setCustomer(
+                    this.customerRepository.findById(request.customerId())
+                            .orElseThrow(() -> new EntityNotFoundException("Customer not found"))
+            );
+        }
+        if(!StringUtils.isBlank(request.deliveryData())) {
+            delivery.setDeliveryData(request.deliveryData());
+        }
+        if(!StringUtils.isBlank(request.observations())) {
+            delivery.setObservations(request.observations());
+        }
+        if(!StringUtils.isBlank(request.comments())) {
+            delivery.setComments(request.comments());
+        }
 
-//   private DeliveryStatusEntity getDeliveryStatus(String deliveryStatus) {
-//      return this.deliveryStatusRepository.findByName(deliveryStatus)
-//              .orElseGet(()-> DELIVERY_STATUS.stream().findFirst()
-//                      .map(r -> deliveryStatusRepository.save(
-//                              DeliveryStatusEntity.builder().name(r).build()))
-//                      .orElseThrow(() -> new EntityNotFoundException(
-//                              "Delivery status " + deliveryStatus + " not found"))
-//              );
-//   }
-    private LocalTime calculateEstimateHourInit(DeliveryUpdateRequest request) {
-        List<DeliveryEntity> pendingDeliveries =
-                deliveryRepository.findAllByDeliveryStatusName(
-                   "PENDIENTE"
-                );
+        // Bussines logic validations
         deliveryBusinessLogicValidations.forEach(
                 validation -> {
-                   validation.validateInitHour(request.deliveryDate(),
-                           pendingDeliveries);
+                    validation.validateInitHour(delivery);
                 }
         );
 
-        return now();
+        return delivery;
     }
+
 }
