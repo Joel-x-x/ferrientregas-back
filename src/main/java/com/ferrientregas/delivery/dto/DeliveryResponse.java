@@ -24,7 +24,7 @@ public record DeliveryResponse (
         @NotNull
         LocalTime estimateHourEnd,
         @NotNull
-        DeliveryStatusEntity deliveryStatusName,
+        DeliveryStatusEntity deliveryStatus,
         @NotNull
         PaymentTypeEntity paymentType,
         @NotNull

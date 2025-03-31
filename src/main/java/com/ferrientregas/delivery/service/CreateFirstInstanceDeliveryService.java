@@ -4,6 +4,8 @@ import com.ferrientregas.delivery.DeliveryEntity;
 import com.ferrientregas.delivery.DeliveryRepository;
 import com.ferrientregas.delivery.dto.DeliveryResponse;
 import com.ferrientregas.delivery.utils.DeliveryMapper;
+import com.ferrientregas.delivery.utils.DeliveryStatusEnum;
+import com.ferrientregas.delivery.utils.PaymentTypeEnum;
 import com.ferrientregas.deliverystatus.DeliveryStatusEntity;
 import com.ferrientregas.deliverystatus.DeliveryStatusRepository;
 import com.ferrientregas.paymenttype.PaymentTypeEntity;
@@ -14,7 +16,6 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -23,12 +24,11 @@ public class CreateFirstInstanceDeliveryService {
     private final DeliveryRepository deliveryRepository;
     private final DeliveryStatusRepository deliveryStatusRepository;
     private final PaymentTypeRepository paymentTypeRepository;
-    private static final String DELIVERY_STATUS = "PENDIENTE";
-    private static final String PAYMENT_TYPE = "CANCELADO";
+    private static final String DELIVERY_STATUS = DeliveryStatusEnum.Pendiente.getValue();
+    private static final String PAYMENT_TYPE = PaymentTypeEnum.Pagado.getValue();
 
     public DeliveryResponse create() {
         DeliveryEntity delivery = DeliveryEntity.builder()
-                .id(UUID.randomUUID())
                 .numeration(generateDeliveryNumeration())
                 .deliveryDate(LocalDate.now())
                 .estimateHourInit(LocalTime.of(8, 0))
@@ -42,6 +42,7 @@ public class CreateFirstInstanceDeliveryService {
         return DeliveryMapper.toDeliveryResponse(delivery);
     }
 
+    /*** Another methods ***/
 
     private String generateDeliveryNumeration() {
         long sizeOfDelivery = this.deliveryRepository.count();

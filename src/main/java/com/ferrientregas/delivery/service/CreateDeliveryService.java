@@ -1,11 +1,11 @@
-package com.ferrientregas.delivery.utils;
+package com.ferrientregas.delivery.service;
 
 import com.ferrientregas.customer.CustomerEntity;
 import com.ferrientregas.customer.CustomerRepository;
 import com.ferrientregas.delivery.DeliveryEntity;
-import com.ferrientregas.delivery.DeliveryRepository;
 import com.ferrientregas.delivery.dto.DeliveryRequest;
-import com.ferrientregas.delivery.rules.DeliveryBusinessLogicValidations;
+import com.ferrientregas.delivery.utils.DeliveryStatusEnum;
+import com.ferrientregas.delivery.utils.PaymentTypeEnum;
 import com.ferrientregas.deliverystatus.DeliveryStatusEntity;
 import com.ferrientregas.deliverystatus.DeliveryStatusRepository;
 import com.ferrientregas.paymenttype.PaymentTypeEntity;
@@ -15,32 +15,24 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.*;
+import java.util.List;
 
 import static java.time.LocalTime.now;
 
 @Component
 @RequiredArgsConstructor
-public class DeliveryFactory {
+public class CreateDeliveryService {
 
     private final DeliveryStatusRepository deliveryStatusRepository;
     private final PaymentTypeRepository paymentTypeRepository;
     private final UserRepository userRepository;
     private final CustomerRepository customerRepository;
-    private final DeliveryRepository deliveryRepository;
-    private static final Set<String> DELIVERY_STATUS = Set.of("PENDIENTE", "EN-PROCESO",
-            "INCOMPLETO", "ENTREGADO", "ATRASADO", "CANCELADO");
-    private static final Set<String> PAYMENT_TYPE = Set.of("CREDITO", "CONTRA-ENTREGA",
-            "INCOMPLETO", "PAGADO", "ABONADO");
-    private final List<DeliveryBusinessLogicValidations> deliveryBusinessLogicValidations;
 
     public DeliveryEntity createDelivery(DeliveryRequest deliveryRequest) {
 
-        CustomerEntity customer = customerRepository.findById(
-                                deliveryRequest.customerId()
-                        )
+        CustomerEntity customer = deliveryRequest.customerId() != null
+                ? customerRepository.findById(deliveryRequest.customerId()).orElse(null)
+                : null;
 
         return DeliveryEntity.builder()
                 .numeration(deliveryRequest.numeration())
@@ -64,9 +56,7 @@ public class DeliveryFactory {
                                 () -> new EntityNotFoundException("User not found")
                         )
                 )
-//                .customer(
-//                        .orElse()
-//                )
+                .customer(customer)
                 .deliveryData(deliveryRequest.deliveryData())
                 .observations(deliveryRequest.observations())
                 .comments(deliveryRequest.comments())
@@ -75,30 +65,26 @@ public class DeliveryFactory {
 
     /*** Another Methods ***/
 
-    private DeliveryStatusEntity getOrCreateDeliveryStatus(String deliveryStatus){
+    private DeliveryStatusEntity getOrCreateDeliveryStatus(String deliveryStatus) {
         return this.deliveryStatusRepository.findByName(deliveryStatus)
-                        .orElseGet(() ->
-                                DELIVERY_STATUS.stream()
-                                        .filter(d -> d.equals(deliveryStatus))
-                                        .findFirst()
-                                        .map(d -> deliveryStatusRepository.save(
-                                                new DeliveryStatusEntity(d)))
-                                        .orElseThrow(() -> new EntityNotFoundException("Delivery status not found")
-                                        )
-                        );
+                .orElseGet(() -> {
+                    if (DeliveryStatusEnum.isValid(deliveryStatus)) {
+                        return deliveryStatusRepository.save(new DeliveryStatusEntity(deliveryStatus));
+                    } else {
+                        throw new EntityNotFoundException("Delivery status not found");
+                    }
+                });
     }
 
-    private PaymentTypeEntity getOrCreatePaymentType(String paymentType){
+    private PaymentTypeEntity getOrCreatePaymentType(String paymentType) {
         return this.paymentTypeRepository.findByName(paymentType)
-                        .orElseGet(() ->
-                                PAYMENT_TYPE.stream()
-                                        .filter(p -> p.equals(paymentType))
-                                        .findFirst()
-                                        .map(p -> paymentTypeRepository.save(
-                                                new PaymentTypeEntity(p)))
-                                        .orElseThrow(() -> new EntityNotFoundException("Payment type not found")
-                                        )
-                        );
+                .orElseGet(() -> {
+                    if (PaymentTypeEnum.isValid(paymentType)) {
+                        return paymentTypeRepository.save(new PaymentTypeEntity(paymentType));
+                    } else {
+                        throw new EntityNotFoundException("Payment type not found");
+                    }
+                });
     }
 
     // TODO: TAKE ACCOUNT THE DRIVER TO CALCULATE ESTIMATE HOUR

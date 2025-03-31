@@ -10,27 +10,19 @@ import java.util.List;
 import java.util.UUID;
 
 public record DeliveryUpdateRequest(
+        @NotNull
+        UUID id,
         String numeration,
         String invoiceNumber,
-        @NotNull
         LocalDate deliveryDate,
-        @NotNull
         LocalTime estimateHourInit,
-        @NotNull
         LocalTime estimateHourEnd,
-        @NotNull
-        String deliveryStatusName,
-        @NotNull
+        String deliveryStatus,
         String paymentType,
-        @NotNull
         BigDecimal credit,
-        @NotNull
         BigDecimal total,
-        @NotNull
         List<EvidenceEntity> evidence,
-        @NotNull
         UUID user,
-        @NotNull
         UUID customer,
         String deliveryData,
         String observations,
