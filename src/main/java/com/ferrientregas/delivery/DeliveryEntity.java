@@ -52,8 +52,9 @@ public class DeliveryEntity extends Auditable {
     private UserEntity user;
 
     @ManyToOne
-    @JoinColumn(name = "customer_id", nullable = false)
+    @JoinColumn(name = "customer_id", nullable = true)
     private CustomerEntity customer;
+
     private String deliveryData;
     private String observations;
     private String comments;
