@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
 
 @Service
 @RequiredArgsConstructor
@@ -35,6 +36,7 @@ public class CreateFirstInstanceDeliveryService {
                 .estimateHourEnd(LocalTime.of(9, 0))
                 .deliveryStatus(generateDeliveryStatusEntity())
                 .paymentType(generatePaymentTypeEntity())
+                .evidence(new ArrayList<>())
                 .credit(BigDecimal.ZERO)
                 .total(BigDecimal.ZERO)
                 .build();

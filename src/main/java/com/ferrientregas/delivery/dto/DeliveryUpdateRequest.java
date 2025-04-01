@@ -21,7 +21,7 @@ public record DeliveryUpdateRequest(
         String paymentType,
         BigDecimal credit,
         BigDecimal total,
-        List<EvidenceEntity> evidence,
+        List<UUID> evidence,
         UUID userId,
         UUID customerId,
         String deliveryData,
