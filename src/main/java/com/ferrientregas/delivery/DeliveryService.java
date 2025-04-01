@@ -5,6 +5,8 @@ import com.ferrientregas.delivery.service.CreateFirstInstanceDeliveryService;
 import com.ferrientregas.delivery.service.CreateDeliveryService;
 import com.ferrientregas.delivery.utils.DeliveryMapper;
 import com.ferrientregas.delivery.service.UpdateDeliveryService;
+import com.ferrientregas.evidence.EvidenceEntity;
+import com.ferrientregas.evidence.EvidenceService;
 import com.ferrientregas.user.UserEntity;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +29,7 @@ public class DeliveryService {
    private final DeliveryRepository deliveryRepository;
    private final CreateDeliveryService createDeliveryService;
    private final UpdateDeliveryService updateDeliveryService;
+   private final EvidenceService evidenceService;
    private final CreateFirstInstanceDeliveryService createFirstInstanceDeliveryService;
 
     public DeliveryResponse getById(UUID id) {
@@ -56,9 +59,16 @@ public class DeliveryService {
                 .map(DeliveryMapper::toDeliveryResponse);
     }
 
-    public DeliveryResponse createDelivery(DeliveryRequest deliveryRequest) {
-        DeliveryEntity delivery = createDeliveryService.createDelivery(deliveryRequest);
-        deliveryRepository.save(delivery);
+    public DeliveryResponse createDelivery(DeliveryRequest request) {
+        DeliveryEntity delivery = deliveryRepository.save(
+                createDeliveryService.createDelivery(request)
+        );
+
+        // Create evidences
+        List<EvidenceEntity> evidence = this.evidenceService.createAll(request.evidence(), delivery);
+
+        delivery.setEvidence(evidence);
+
         return DeliveryMapper.toDeliveryResponse(delivery);
     }
 
@@ -74,9 +84,9 @@ public class DeliveryService {
    }
 
     public DeliveryResponse updateDelivery(UUID id,
-            DeliveryUpdateRequest deliveryRequest
+            DeliveryUpdateRequest request
     ){
-        DeliveryEntity delivery = updateDeliveryService.update(deliveryRequest);
+        DeliveryEntity delivery = updateDeliveryService.update(request);
         deliveryRepository.save(delivery);
         return DeliveryMapper.toDeliveryResponse(delivery);
     }

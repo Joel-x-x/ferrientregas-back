@@ -3,6 +3,7 @@ package com.ferrientregas.delivery.dto;
 import com.ferrientregas.customer.CustomerEntity;
 import com.ferrientregas.deliverystatus.DeliveryStatusEntity;
 import com.ferrientregas.evidence.EvidenceEntity;
+import com.ferrientregas.evidence.dto.EvidenceResponse;
 import com.ferrientregas.paymenttype.PaymentTypeEntity;
 import com.ferrientregas.user.UserEntity;
 import jakarta.validation.constraints.NotNull;
@@ -32,7 +33,7 @@ public record DeliveryResponse (
         @NotNull
         BigDecimal total,
         @NotNull
-        List<EvidenceEntity> evidence,
+        List<EvidenceResponse> evidence,
         @NotNull
         UserEntity user,
         @NotNull

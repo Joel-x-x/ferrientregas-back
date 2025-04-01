@@ -28,8 +28,8 @@ public record DeliveryRequest (
         BigDecimal credit,
         @NotNull
         BigDecimal total,
-        @NotNull
-        List<EvidenceEntity> evidence,
+//        @NotNull
+        List<String> evidence,
         @NotNull
         UUID userId,
         UUID customerId,

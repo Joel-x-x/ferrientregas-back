@@ -2,6 +2,9 @@ package com.ferrientregas.delivery.utils;
 
 import com.ferrientregas.delivery.DeliveryEntity;
 import com.ferrientregas.delivery.dto.DeliveryResponse;
+import com.ferrientregas.evidence.dto.EvidenceMapper;
+
+import java.util.stream.Collectors;
 
 public class DeliveryMapper {
     public static DeliveryResponse toDeliveryResponse(DeliveryEntity delivery) {
@@ -16,7 +19,10 @@ public class DeliveryMapper {
                 delivery.getPaymentType(),
                 delivery.getCredit(),
                 delivery.getTotal(),
-                delivery.getEvidence(),
+                delivery.getEvidence()
+                        .stream()
+                        .map(EvidenceMapper::toEvidenceResponse)
+                        .collect(Collectors.toList()),
                 delivery.getUser(),
                 delivery.getCustomer(),
                 delivery.getDeliveryData(),

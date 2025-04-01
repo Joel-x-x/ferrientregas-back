@@ -1,5 +1,6 @@
 package com.ferrientregas.evidence;
 
+import com.ferrientregas.delivery.DeliveryEntity;
 import com.ferrientregas.evidence.dto.EvidenceMapper;
 import com.ferrientregas.evidence.dto.EvidenceRequest;
 import com.ferrientregas.evidence.dto.EvidenceResponse;
@@ -11,7 +12,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -36,6 +39,19 @@ public class EvidenceService {
     public EvidenceResponse createEvidence(EvidenceRequest evidenceRequest) {
        EvidenceEntity evidence = createAndSaveEvidence(evidenceRequest);
        return EvidenceMapper.toEvidenceResponse(evidence);
+    }
+
+    public List<EvidenceEntity> createAll(List<String> evidence, DeliveryEntity delivery) {
+        if(evidence == null || evidence.isEmpty()) return List.of();
+
+        List<EvidenceEntity> evidenceEntities = evidence.stream().map(
+                url -> EvidenceEntity.builder()
+                        .url(url)
+                        .delivery(delivery)
+                        .build()
+        ).collect(Collectors.toList());
+
+        return this.evidenceRepository.saveAll(evidenceEntities);
     }
 
     public EvidenceResponse updateEvidence(

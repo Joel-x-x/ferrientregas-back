@@ -9,6 +9,7 @@ import com.ferrientregas.user.UserEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.checkerframework.common.aliasing.qual.Unique;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -28,6 +29,7 @@ import static java.time.LocalDateTime.now;
 @Table(name = "deliveries")
 public class DeliveryEntity extends Auditable {
 
+    @Unique
     private String numeration;
     private String invoiceNumber;
     private LocalDate deliveryDate;
@@ -44,7 +46,7 @@ public class DeliveryEntity extends Auditable {
     private BigDecimal credit = BigDecimal.ZERO;
     private BigDecimal total = BigDecimal.ZERO;
 
-    @OneToMany(mappedBy = "url", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "delivery", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<EvidenceEntity> evidence;
 
     @ManyToOne

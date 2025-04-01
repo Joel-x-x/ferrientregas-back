@@ -58,9 +58,6 @@ public class UpdateDeliveryService {
         if(request.total() != null) {
             delivery.setTotal(request.total());
         }
-        if(request.evidence() != null) {
-            delivery.setEvidence(request.evidence());
-        }
         if(request.userId() != null) {
             delivery.setUser(
                     this.userRepository.findById(request.userId())
