@@ -22,6 +22,18 @@ public class SecurityConfiguration {
     private final JwtAuthenticationFilter jwtAuthFilter;
     private final AuthenticationProvider authenticationProvider;
 
+        @Bean
+        public WebMvcConfigurer corsConfigurer() {
+            return new WebMvcConfigurer() {
+                @Override
+                public void addCorsMappings( CorsRegistry registry) {
+                    registry.addMapping("/**")
+                            .allowedOrigins("*")
+                            .allowedMethods("GET", "POST", "PUT", "DELETE")
+                            .allowedHeaders("*");
+                }
+            };
+        }
 
         @Bean
         public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity)
@@ -47,16 +59,4 @@ public class SecurityConfiguration {
 
         }
 
-        @Bean
-        public WebMvcConfigurer corsConfigurer() {
-            return new WebMvcConfigurer() {
-                @Override
-                public void addCorsMappings( CorsRegistry registry) {
-                    registry.addMapping("/**")
-                            .allowedOrigins("*")
-                            .allowedMethods("GET", "POST", "PUT", "DELETE")
-                            .allowedHeaders("*");
-                }
-            };
-        }
 }
