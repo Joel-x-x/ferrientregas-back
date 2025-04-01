@@ -4,6 +4,7 @@ import com.ferrientregas.bucket.dto.CreateImageDto;
 import com.ferrientregas.bucket.dto.UpdateImageDto;
 import com.ferrientregas.exception.ResultResponse;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,9 +12,10 @@ import java.io.IOException;
 
 @RestController
 @RequestMapping("api/v1/image")
+@RequiredArgsConstructor
 public class ImageController {
 
-    private ImageService imageService;
+    private final ImageService imageService;
 
     @PostMapping("/upload")
     public ResponseEntity<ResultResponse<Object,String>> uploadImage(
@@ -23,7 +25,7 @@ public class ImageController {
                 .success(imageUrl,200));
     }
 
-    @PutMapping("/upload")
+    @PutMapping("/update")
     public ResponseEntity<ResultResponse<Object,String>> updateImage(
             @ModelAttribute @Valid UpdateImageDto updateImageDto) throws IOException {
         String imageUrl = imageService.updateImage(updateImageDto);

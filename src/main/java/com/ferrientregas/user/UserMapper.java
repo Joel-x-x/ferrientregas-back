@@ -1,6 +1,7 @@
-package com.ferrientregas.user.dto;
+package com.ferrientregas.user;
 
-import com.ferrientregas.user.UserEntity;
+import com.ferrientregas.user.dto.UserResponse;
+import com.ferrientregas.user.dto.VerificationResponse;
 
 public class UserMapper {
     public static UserResponse toUserResponse(UserEntity user) {

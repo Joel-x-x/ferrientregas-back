@@ -5,13 +5,17 @@ import com.ferrientregas.delivery.DeliveryEntity;
 import com.ferrientregas.delivery.DeliveryRepository;
 import com.ferrientregas.delivery.dto.DeliveryUpdateRequest;
 import com.ferrientregas.delivery.rules.DeliveryBusinessLogicValidations;
+import com.ferrientregas.role.RoleEntity;
 import com.ferrientregas.user.UserRepository;
 import io.micrometer.common.util.StringUtils;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static java.time.LocalTime.now;
 
@@ -89,4 +93,18 @@ public class UpdateDeliveryService {
         return delivery;
     }
 
+    /** Antoher methods **/
+
+//    private Set<RoleEntity> getOrCreateRole(String role){
+//        return new HashSet<>(Collections.singleton(
+//                this.roleRepository.findByName(role)
+//                        .orElseGet(() ->
+//                                ROLES.stream()
+//                                        .filter(r -> r.equals(role))
+//                                        .findFirst()
+//                                        .map(r -> roleRepository.save(new RoleEntity(r)))
+//                                        .orElseThrow(() -> new EntityNotFoundException("Role not found")
+//                                        )
+//                        )));
+//    }
 }

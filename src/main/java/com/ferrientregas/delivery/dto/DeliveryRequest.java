@@ -28,7 +28,7 @@ public record DeliveryRequest (
         BigDecimal credit,
         @NotNull
         BigDecimal total,
-//        @NotNull
+        @NotNull
         List<EvidenceEntity> evidence,
         @NotNull
         UUID userId,
