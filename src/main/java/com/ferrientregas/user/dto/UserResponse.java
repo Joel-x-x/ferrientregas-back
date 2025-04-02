@@ -12,8 +12,7 @@ public record UserResponse (
         String firstNames,
         String lastNames,
         String email,
-        String password,
-        UUID profileImage,
+        String profileImage,
         Boolean emailConfirmed,
         Set<RoleEntity> roles
 ){

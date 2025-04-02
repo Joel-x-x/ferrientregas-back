@@ -10,8 +10,6 @@ import java.util.List;
 import java.util.UUID;
 
 public record DeliveryUpdateRequest(
-        @NotNull
-        UUID id,
         String numeration,
         String invoiceNumber,
         LocalDate deliveryDate,
@@ -21,7 +19,6 @@ public record DeliveryUpdateRequest(
         String paymentType,
         BigDecimal credit,
         BigDecimal total,
-        List<UUID> evidence,
         UUID userId,
         UUID customerId,
         String deliveryData,

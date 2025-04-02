@@ -12,10 +12,7 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static java.time.LocalTime.now;
 
@@ -29,9 +26,9 @@ public class UpdateDeliveryService {
     private final CustomerRepository customerRepository;
     private final List<DeliveryBusinessLogicValidations> deliveryBusinessLogicValidations;
 
-    public DeliveryEntity update(DeliveryUpdateRequest request) {
+    public DeliveryEntity update(DeliveryUpdateRequest request, UUID id) {
 
-        DeliveryEntity delivery = this.deliveryRepository.findById(request.id())
+        DeliveryEntity delivery = this.deliveryRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Delivery not found"));
 
         if(!StringUtils.isBlank(request.invoiceNumber())) {
@@ -43,6 +40,7 @@ public class UpdateDeliveryService {
         if(request.estimateHourInit() != null) {
             delivery.setEstimateHourInit(request.estimateHourInit());
         }
+        // TODO: FUNCIONALIDAD DE QUE CAMBIE A ATRASADO
         if(request.estimateHourEnd() != null) {
             delivery.setEstimateHourEnd(request.estimateHourEnd());
         }

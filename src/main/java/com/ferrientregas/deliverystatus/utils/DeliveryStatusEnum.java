@@ -1,21 +1,20 @@
-package com.ferrientregas.delivery.utils;
+package com.ferrientregas.deliverystatus.utils;
 
+import lombok.Getter;
+
+@Getter
 public enum DeliveryStatusEnum {
-    Pendiente("Pendiente"),
-    EnProceso("En-Proceso"),
-    Incompleto("Incompleto"),
-    Entregado("Entregado"),
-    Atrasado("Atrasado"),
-    Cancelado("Cancelado");
+    PENDIENTE("Pendiente"),
+    ENPROCESO("En-Proceso"),
+    INCOMPLETO("Incompleto"),
+    ENTREGADO("Entregado"),
+    ATRASADO("Atrasado"),
+    CANCELADO("Cancelado");
 
     private final String value;
 
     DeliveryStatusEnum(String value) {
         this.value = value;
-    }
-
-    public String getValue() {
-        return value;
     }
 
     public static boolean isValid(String status) {

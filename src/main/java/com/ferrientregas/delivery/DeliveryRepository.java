@@ -15,7 +15,9 @@ import java.util.UUID;
 public interface DeliveryRepository extends JpaRepository<DeliveryEntity,
         UUID> {
 
+    /** getAll **/
     Page<DeliveryEntity> findAllByDeletedIsFalseAndUserAndDeliveryStatus_Name(Pageable pageable, UserEntity user, String name);
+    Page<DeliveryEntity> findAllByDeletedIsFalseAndDeliveryStatus_Name(Pageable pageable, String name);
 
     Page<DeliveryEntity> findAllByDeletedIsFalse(Pageable pageable);
 

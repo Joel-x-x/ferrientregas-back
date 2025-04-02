@@ -10,7 +10,6 @@ public class UserMapper {
                 user.getFirstNames(),
                 user.getLastNames(),
                 user.getEmail(),
-                user.getPassword(),
                 user.getProfileImage(),
                 user.getEmailConfirmed(),
                 user.getRoles()

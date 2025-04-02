@@ -37,6 +37,10 @@ spring:
           ssl.protocols: TLSv1.2,TLSv1.3
   flyway:
     baseline-on-migrate: true
+# Swagger
+springdoc:
+  swagger-ui:
+    filter: true
 # Server configurations
 server:
   error:

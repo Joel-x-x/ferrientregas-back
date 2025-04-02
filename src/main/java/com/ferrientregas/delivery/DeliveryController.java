@@ -69,7 +69,7 @@ public class DeliveryController {
             @RequestBody DeliveryUpdateRequest deliveryUpdateRequest
     ){
         return ResponseEntity.ok(ResultResponse.success(
-                this.deliveryService.updateDelivery(id,deliveryUpdateRequest),
+                this.deliveryService.updateDelivery(deliveryUpdateRequest, id),
                 200
         ));
     }

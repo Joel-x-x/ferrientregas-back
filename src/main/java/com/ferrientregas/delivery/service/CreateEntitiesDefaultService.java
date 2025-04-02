@@ -1,7 +1,7 @@
 package com.ferrientregas.delivery.service;
 
-import com.ferrientregas.delivery.utils.DeliveryStatusEnum;
-import com.ferrientregas.delivery.utils.PaymentTypeEnum;
+import com.ferrientregas.deliverystatus.utils.DeliveryStatusEnum;
+import com.ferrientregas.paymenttype.utils.PaymentTypeEnum;
 import com.ferrientregas.deliverystatus.DeliveryStatusEntity;
 import com.ferrientregas.deliverystatus.DeliveryStatusRepository;
 import com.ferrientregas.paymenttype.PaymentTypeEntity;

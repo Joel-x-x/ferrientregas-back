@@ -4,8 +4,8 @@ import com.ferrientregas.delivery.DeliveryEntity;
 import com.ferrientregas.delivery.DeliveryRepository;
 import com.ferrientregas.delivery.dto.DeliveryResponse;
 import com.ferrientregas.delivery.utils.DeliveryMapper;
-import com.ferrientregas.delivery.utils.DeliveryStatusEnum;
-import com.ferrientregas.delivery.utils.PaymentTypeEnum;
+import com.ferrientregas.deliverystatus.utils.DeliveryStatusEnum;
+import com.ferrientregas.paymenttype.utils.PaymentTypeEnum;
 import com.ferrientregas.deliverystatus.DeliveryStatusEntity;
 import com.ferrientregas.deliverystatus.DeliveryStatusRepository;
 import com.ferrientregas.paymenttype.PaymentTypeEntity;
@@ -25,8 +25,8 @@ public class CreateFirstInstanceDeliveryService {
     private final DeliveryRepository deliveryRepository;
     private final DeliveryStatusRepository deliveryStatusRepository;
     private final PaymentTypeRepository paymentTypeRepository;
-    private static final String DELIVERY_STATUS = DeliveryStatusEnum.Pendiente.getValue();
-    private static final String PAYMENT_TYPE = PaymentTypeEnum.Pagado.getValue();
+    private static final String DELIVERY_STATUS = DeliveryStatusEnum.PENDIENTE.getValue();
+    private static final String PAYMENT_TYPE = PaymentTypeEnum.PAGADO.getValue();
 
     public DeliveryResponse create() {
         DeliveryEntity delivery = DeliveryEntity.builder()

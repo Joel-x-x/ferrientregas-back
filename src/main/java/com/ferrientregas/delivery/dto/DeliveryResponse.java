@@ -6,6 +6,7 @@ import com.ferrientregas.evidence.EvidenceEntity;
 import com.ferrientregas.evidence.dto.EvidenceResponse;
 import com.ferrientregas.paymenttype.PaymentTypeEntity;
 import com.ferrientregas.user.UserEntity;
+import com.ferrientregas.user.dto.UserResponse;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 
@@ -27,7 +28,7 @@ public record DeliveryResponse (
         BigDecimal credit,
         BigDecimal total,
         List<EvidenceResponse> evidence,
-        UserEntity user,
+        UserResponse user,
         CustomerEntity customer,
         String deliveryData,
         String observations,

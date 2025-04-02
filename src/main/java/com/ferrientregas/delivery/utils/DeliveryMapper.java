@@ -3,6 +3,7 @@ package com.ferrientregas.delivery.utils;
 import com.ferrientregas.delivery.DeliveryEntity;
 import com.ferrientregas.delivery.dto.DeliveryResponse;
 import com.ferrientregas.evidence.dto.EvidenceMapper;
+import com.ferrientregas.user.UserMapper;
 
 import java.util.stream.Collectors;
 
@@ -23,7 +24,7 @@ public class DeliveryMapper {
                         .stream()
                         .map(EvidenceMapper::toEvidenceResponse)
                         .collect(Collectors.toList()),
-                delivery.getUser(),
+                UserMapper.toUserResponse(delivery.getUser()),
                 delivery.getCustomer(),
                 delivery.getDeliveryData(),
                 delivery.getObservations(),

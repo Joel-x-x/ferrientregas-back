@@ -91,9 +91,6 @@ public class UserService {
         if(!StringUtils.isBlank(userUpdateRequest.email())){
             user.setEmail(userUpdateRequest.email());
         }
-        if(!StringUtils.isBlank(userUpdateRequest.password())){
-            user.setPassword(userUpdateRequest.password());
-        }
         user.setProfileImage(userUpdateRequest.profileImage());
         user.setEmailConfirmed(userUpdateRequest.emailConfirmed());
 

@@ -1,20 +1,19 @@
-package com.ferrientregas.delivery.utils;
+package com.ferrientregas.paymenttype.utils;
 
+import lombok.Getter;
+
+@Getter
 public enum PaymentTypeEnum {
-    Credito("Credito"),
-    ContraEntrega("Contra-Entrega"),
-    Incompleto("Incompleto"),
-    Pagado("Pagado"),
-    Abonado("Abonado");
+    CREDITO("Credito"),
+    CONTRAENTREGA("Contra-Entrega"),
+    INCOMPLETO("Incompleto"),
+    PAGADO("Pagado"),
+    ABONADO("Abonado");
 
     private final String value;
 
     PaymentTypeEnum(String value) {
         this.value = value;
-    }
-
-    public String getValue() {
-        return value;
     }
 
     public static boolean isValid(String paymentType) {

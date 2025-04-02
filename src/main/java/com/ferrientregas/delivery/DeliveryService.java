@@ -7,6 +7,7 @@ import com.ferrientregas.delivery.utils.DeliveryMapper;
 import com.ferrientregas.delivery.service.UpdateDeliveryService;
 import com.ferrientregas.evidence.EvidenceEntity;
 import com.ferrientregas.evidence.EvidenceService;
+import com.ferrientregas.role.utils.RoleEnum;
 import com.ferrientregas.user.UserEntity;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -52,11 +53,30 @@ public class DeliveryService {
                 .map(DeliveryMapper::toDeliveryResponse);
     }
 
+    /**
+     * Get all delivery by status, take account in case the user be a Driver
+     * return all driver deliveries, but the user is an Admin return all deliveries
+     *
+     * @param pageable Pageable
+     * @param authentication Authentication to know the user logged
+     * @param deliveryStatus DeliveryStatus to filter the list
+     * @return List<DeliveryStatus>
+     */
+    // TODO: REFACTORING WITH SPECIFICATION API
     public Page<DeliveryResponse> getAllByDeliveryStatus(Pageable pageable, Authentication authentication, String deliveryStatus) {
         UserEntity user = (UserEntity) authentication.getPrincipal();
 
-        return deliveryRepository.findAllByDeletedIsFalseAndUserAndDeliveryStatus_Name(pageable, user, deliveryStatus)
-                .map(DeliveryMapper::toDeliveryResponse);
+        boolean isAdmin = user.getRoles().stream().anyMatch(role ->
+                role.getName().equals(RoleEnum.ADMIN.getValue()) ||
+                        role.getName().equals(RoleEnum.EMPLOYEE.getValue()));
+
+        if(isAdmin) {
+            return deliveryRepository.findAllByDeletedIsFalseAndDeliveryStatus_Name(pageable, deliveryStatus)
+                    .map(DeliveryMapper::toDeliveryResponse);
+        } else {
+            return deliveryRepository.findAllByDeletedIsFalseAndUserAndDeliveryStatus_Name(pageable, user, deliveryStatus)
+                    .map(DeliveryMapper::toDeliveryResponse);
+        }
     }
 
     public DeliveryResponse createDelivery(DeliveryRequest request) {
@@ -83,10 +103,11 @@ public class DeliveryService {
        return createFirstInstanceDeliveryService.create();
    }
 
-    public DeliveryResponse updateDelivery(UUID id,
-            DeliveryUpdateRequest request
+    public DeliveryResponse updateDelivery(
+            DeliveryUpdateRequest request,
+            UUID id
     ){
-        DeliveryEntity delivery = updateDeliveryService.update(request);
+        DeliveryEntity delivery = updateDeliveryService.update(request, id);
         deliveryRepository.save(delivery);
         return DeliveryMapper.toDeliveryResponse(delivery);
     }
