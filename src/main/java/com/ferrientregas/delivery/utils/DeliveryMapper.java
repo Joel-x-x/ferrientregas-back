@@ -20,11 +20,15 @@ public class DeliveryMapper {
                 delivery.getPaymentType(),
                 delivery.getCredit(),
                 delivery.getTotal(),
-                delivery.getEvidence()
+                delivery.getEvidence() != null
+                        ? delivery.getEvidence()
                         .stream()
                         .map(EvidenceMapper::toEvidenceResponse)
-                        .collect(Collectors.toList()),
-                UserMapper.toUserResponse(delivery.getUser()),
+                        .collect(Collectors.toList())
+                        : null,
+                delivery.getUser() != null
+                        ? UserMapper.toUserResponse(delivery.getUser())
+                        : null,
                 delivery.getCustomer(),
                 delivery.getDeliveryData(),
                 delivery.getObservations(),

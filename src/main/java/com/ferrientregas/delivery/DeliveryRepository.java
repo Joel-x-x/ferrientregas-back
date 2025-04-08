@@ -28,4 +28,9 @@ public interface DeliveryRepository extends JpaRepository<DeliveryEntity,
 
     Page<DeliveryEntity> findAllByUserIdAndDeletedIsFalse(UUID userId,
                                                           Pageable pageable);
+
+    /** Reports **/
+    long countByDeliveryStatus_Name(String status);
+    long countByPaymentType_Name(String payment);
+    long countByDeliveryStatus_NameAndPaymentType_Name(String status, String payment);
 }

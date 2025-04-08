@@ -23,4 +23,7 @@ public interface UserRepository extends JpaRepository<UserEntity, UUID> {
             """
     )
     Page<UserEntity> findAllByDeletedIsFalseAndRolesNameContains(Pageable pageable, String role);
+
+    /** Reports **/
+    long countByRoles_Name(String role);
 }
