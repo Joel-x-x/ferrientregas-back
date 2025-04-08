@@ -1,6 +1,10 @@
 package com.ferrientregas.evidence.dto;
 
+import java.util.List;
+import java.util.UUID;
+
 public record EvidenceRequest (
-    String url
+    List<String> url,
+    UUID deliveryId
 ){
 }

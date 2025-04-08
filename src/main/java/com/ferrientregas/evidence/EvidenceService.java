@@ -1,6 +1,7 @@
 package com.ferrientregas.evidence;
 
 import com.ferrientregas.delivery.DeliveryEntity;
+import com.ferrientregas.delivery.DeliveryRepository;
 import com.ferrientregas.evidence.dto.EvidenceMapper;
 import com.ferrientregas.evidence.dto.EvidenceRequest;
 import com.ferrientregas.evidence.dto.EvidenceResponse;
@@ -21,6 +22,7 @@ import java.util.stream.Collectors;
 public class EvidenceService {
 
     private final EvidenceRepository evidenceRepository;
+    private final DeliveryRepository deliveryRepository;
 
     public EvidenceResponse getEvidence(UUID id)
              {
@@ -36,9 +38,11 @@ public class EvidenceService {
                 .map(EvidenceMapper::toEvidenceResponse);
     }
 
-    public EvidenceResponse createEvidence(EvidenceRequest evidenceRequest) {
-       EvidenceEntity evidence = createAndSaveEvidence(evidenceRequest);
-       return EvidenceMapper.toEvidenceResponse(evidence);
+    public List<EvidenceResponse> createEvidence(EvidenceRequest request) {
+       return saveAll(request)
+               .stream()
+               .map(EvidenceMapper::toEvidenceResponse)
+               .collect(Collectors.toList());
     }
 
     public List<EvidenceEntity> createAll(List<String> evidence, DeliveryEntity delivery) {
@@ -81,11 +85,19 @@ public class EvidenceService {
     }
 
 
-    private EvidenceEntity createAndSaveEvidence(EvidenceRequest evidenceRequest){
-        return this.evidenceRepository.save(EvidenceEntity.builder()
-                .url(evidenceRequest.url())
-                .build()
-        );
+    private List<EvidenceEntity> saveAll(EvidenceRequest request){
+        DeliveryEntity delivery = deliveryRepository.findById(request.deliveryId())
+                .orElseThrow(() -> new EntityNotFoundException("Delivery with id " + request.deliveryId()
+                        + " not found"));
+
+        List<EvidenceEntity> evidence = request.url().stream()
+                .map(r -> EvidenceEntity.builder()
+                        .url(r)
+                        .delivery(delivery)
+                        .build())
+                .collect(Collectors.toList());
+
+        return this.evidenceRepository.saveAll(evidence);
     }
 
 }

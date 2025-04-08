@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -41,19 +42,12 @@ public class EvidenceController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<ResultResponse<EvidenceResponse,String>> createEvidence(
+    public ResponseEntity<ResultResponse<List<EvidenceResponse>,String>> createEvidence(
             @Validated @RequestBody EvidenceRequest request
     ){
-        EvidenceResponse evidence = this.evidenceService.createEvidence(request);
+        List<EvidenceResponse> evidence = this.evidenceService.createEvidence(request);
 
-        URI location = ServletUriComponentsBuilder
-                .fromCurrentRequest()
-                .path("{id}")
-                .buildAndExpand(evidence.id())
-                .toUri();
-
-        return ResponseEntity.created(location)
-                .body(ResultResponse.success(evidence,201));
+        return ResponseEntity.ok(ResultResponse.success(evidence,201));
     }
 
     @PutMapping("/{id}")
