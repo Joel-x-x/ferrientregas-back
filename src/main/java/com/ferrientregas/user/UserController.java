@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -43,6 +44,16 @@ public class UserController {
        return ResponseEntity.ok(ResultResponse.success(
                this.userService.getUser(id),200
        ));
+    }
+
+    @GetMapping("/current-user")
+    public ResponseEntity<ResultResponse<UserResponse,String>> findByJWT(
+            Authentication authentication
+    ){
+        return ResponseEntity.ok(ResultResponse.success(
+                this.userService.getUserByJWT(authentication),
+               200
+        ));
     }
 
    @PostMapping

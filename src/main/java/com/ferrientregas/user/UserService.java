@@ -8,6 +8,7 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -79,6 +80,13 @@ public class UserService {
               .orElseThrow(()->
                       new EntityNotFoundException("User with id " + id +
                               " not found"));
+    }
+
+
+    public UserResponse getUserByJWT(Authentication authentication){
+        String userEmail = authentication.getName();
+        UserEntity user = userRepository.findByEmail(userEmail);
+        return UserMapper.toUserResponse(user);
     }
 
     private void updateUserFields(UserEntity user, UserUpdateRequest userUpdateRequest){
