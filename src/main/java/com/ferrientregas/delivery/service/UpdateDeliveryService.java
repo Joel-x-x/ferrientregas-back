@@ -45,10 +45,12 @@ public class UpdateDeliveryService {
             delivery.setEstimateHourEnd(request.estimateHourEnd());
         }
         if(request.deliveryStatus() != null) {
-            this.createEntitiesDefaultService.getOrCreateDeliveryStatus(request.deliveryStatus());
+            delivery.setDeliveryStatus(this.createEntitiesDefaultService.
+                    getOrCreateDeliveryStatus(request.deliveryStatus()));
         }
         if(request.paymentType() != null) {
-            this.createEntitiesDefaultService.getOrCreatePaymentType(request.paymentType());
+            delivery.setPaymentType(this.createEntitiesDefaultService
+                    .getOrCreatePaymentType(request.paymentType()));
         }
         if(request.credit() != null) {
             delivery.setCredit(request.credit());
