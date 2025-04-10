@@ -5,7 +5,6 @@ public record UserUpdateRequest (
         String lastNames,
         String email,
         String profileImage,
-        Boolean emailConfirmed,
-        String role
+        Boolean emailConfirmed
 ){
 }
