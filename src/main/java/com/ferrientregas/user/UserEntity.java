@@ -34,6 +34,7 @@ public class UserEntity extends Auditable implements UserDetails {
     private String email;
     @Column(nullable = false)
     private String password;
+    @Column(name = "profile_image", columnDefinition = "TEXT")
     private String profileImage;
     private Boolean emailConfirmed;
     @Column(name = "token", unique = true)
