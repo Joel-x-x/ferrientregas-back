@@ -100,8 +100,6 @@ public class UserService {
             user.setEmail(userUpdateRequest.email());
         }
         user.setProfileImage(userUpdateRequest.profileImage());
-        user.setEmailConfirmed(userUpdateRequest.emailConfirmed());
-
         userRepository.save(user);
     }
 
